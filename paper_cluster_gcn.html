@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>VJAI-PaperReading#3-KDD2019-ClusterGCN</title>
+
+		<meta name="author" content="Dat Nguyen">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/monokai.css">
+        
+        <link rel="stylesheet" href="css/paper/kdd2019_cluster_gcn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+                    <h3>Cluster-GCN: An Efficient Algorithm for Training Deep and <br>
+                        Large Graph Convolutional Networks</h3>
+                    <small><p>KDD'2019</p></small>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <small>VJAI Paper Reading festival #3</small>
+                    <br/>
+                    <small>2019/8/18</small>
+                    <br/>
+                    <small>Presented by Dat Nguyen</small>
+                </section>
+
+                <section data-markdown class="toc">
+					<script type="text/template">
+                        ### Outline
+                        
+                        1. Background
+                            * What is GCN?
+                            * Applications of GCN
+                        2. Introduction
+                        3. Problems of current methods
+                        4. Cluster-GCN
+                            * Vanilla Cluster-GCN
+                            * Stochastic Multiple Partitions
+                            * Training deeper GCNs
+                        5. Experiments & Results
+                        6. Conclusion
+					</script>
+                </section>
+
+                <section data-markdown class='toc off'>
+                    <script type="text/template">
+                        ### Outline
+
+                        1. <span class="on">Background
+                            * What is GCN?
+                            * Applications of GCN
+                        </span> 
+                        2. Introduction
+                        3. Problems of current methods
+                        4. Cluster-GCN
+                            * Vanilla Cluster-GCN
+                            * Stochastic Multiple Partitions
+                            * Training deeper GCNs
+                        5. Experiments & Results
+                        6. Conclusion
+					</script>
+                </section>
+
+                <section class='x-small'>
+                    <h3>Vanilla Neural Network recap</h3>
+
+                    <div class=column style='width:60%;'>
+                        <ul>
+                            <li>Consider a Neural Network with L layers (no bias)</li>
+                            <li>Number of neural at the layer $l^{th}$: $F_l$</li>
+                            <li>Features at the layer $l^{th}$: $X^{(l)} \in \mathbb{R}^{1 \times F_l}$</li>
+                            <li>Parameters at the layer $l^{th}$: $W^{(l)} \in \mathbb{R}^{F_l \times F_{l+1}}$</li>
+                            <li>Feature vectors $X^{(l)}$ are transformed layer by layer</li>
+                        
+                            <li>
+                        $$Z^{(l+1)} = X^{(l)} W^{(l)} \\\\
+                        X^{(l+1)}=\sigma(Z^{(l+1)})$$
+                        where $\sigma$ is an activation function.
+                            </li>
+                        
+                            <li>Training step: updating parameters $W^{(l)}$ to build an appropriate transformation</li>
+                            <li>The network transform each input feature vector into an output feature vector independently from the others</li>
+                        </ul>
+
+                    </div>
+                    <div class=column style='width:40%;'>
+                        <ul>
+                            <ol><image src='images/cluster_gcn/VJAI_KDD2019_GCN.png'/></ol>
+                        </ul>
+                        <div class='definition small' style='padding:0.5em 0.2em 0.5em 0.2em;'>
+                            <span class='highlight'>Question</span>: What if we build a network to transform <span class='lightly-highlight'>multiple feature vectors</span> at once
+                        </div>
+                    </div>
+                </section>
+
+                <section class='x-small'>
+                    <h3>The idea of Graph Convolutional Networks (GCN)</h3>
+                    <ul>
+                        <li>First, change the feature vector $X^{(l)} \in \mathbb{R}^{1 \times F_l}$ into a list of N feature vectors (a feature matrix) $X^{(l)} \in \mathbb{R}^{N \times F_l}$  </li>
+                        <li>So, at each layer $l^{th}$, we N nodes, each node $i^{th}$ is represented by a feature vector $X^{(l)}$[i]</li>
+                        <li>One more idea: Take the <span class='highlight'>relationship of nodes</span> into account</li>
+                        <li>In graph, one way to represent the relationship of nodes is to use <span class='highlight'>adjacency matrix $A \in \mathbb{R}^{N \times N}$</span></li>
+                        <li>The transformation at layer $l^{th}$ become</li>
+                        <li>
+                            $$Z^{(l+1)}=f(A, X^{(l)}, W^{(l)})$$
+                        </li>
+                        <li>One way to define $f$: 
+                            $$f(A, X^{(l)}, W^{(l)}) = A X^{(l)} W^{(l)}$$
+                        </li>
+                        <li>So, we have: 
+                            $$Z^{(l+1)} = A X^{(l)} W^{(l)}, X^{(l+1)}=\sigma(Z^{(l+1)})$$
+                        </li>
+                        <li>Intuition: <span class='highlight'>accumulate features from the neighbors</span> before applying the $W^{(l)}$ transformation </li>
+                        <li>In fact, A can be <span class='highlight'>normalized</span> in some way before using, e.g., augment self feature, divided by degree matrix...</li>
+                    </ul>
+
+                </section>
+
+                <section data-markdown class='small'>
+                    <script type="text/template">
+                        ### Connection between GCN and Convolutional Network
+
+                        * Convolution on 2D-image (left)
+                            * Convolution operator takes <span class='highlight'>weighted sum of neighbor values</span>
+                            * Fixed neighbors, decided by the kernel size
+                        * Graph convolution with GCN (right)
+                            * Feature of a node is <span class='highlight'>accumulated neighbor features</span>
+                            * Variable neighbors, decided by the graph
+
+                        <image src='images/cluster_gcn/convnet.png' width=40%/>
+                        <br/>
+                        <small>Credit: <a href='https://arxiv.org/pdf/1901.00596.pdf' target="_blank">A Comprehensive Survey on Graph Neural Networks</a></small>
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ### Other variants of Graph-based Neural Networks
+
+                        * GCN is only 1 variant of Graph Neural Networks (GNN). 
+                        * Other variants of GNN:
+                            * Recurrent Graph Neural Networks
+                            * Graph Autoencoders
+                            * Graph Attention Network (GAT)
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ### Application of GNN
+
+                        * GNN can be applied to many graph-based applications:
+                            * Recommender systems
+                            * Social network analysis
+                            * Chemistry
+                            * Traffic
+                            * Computer Vision
+                            * NLP...
+                    </script>
+                </section>
+
+
+
+
+
+                <section data-markdown class='toc off'>
+					<script type="text/template">
+                        ### Outline
+
+                        1. Background
+                            * What is GCN?
+                            * Applications of GCN
+                        2. <span class="on">Introduction</span> 
+                        3. Problems of current methods
+                        4. Cluster-GCN
+                            * Vanilla Cluster-GCN
+                            * Stochastic Multiple Partitions
+                            * Training deeper GCNs
+                        5. Experiments & Results
+                        6. Conclusion
+					</script>
+                </section>
+
+                <section data-markdown class='small'>
+					<script type="text/template">
+                        ### Introduction
+
+                        * Computational cost of current SGD-based algorithms <span class='highlight'>exponentially grows with number of layers</span>.
+                        * <span class='highlight'>Large space requirement</span> for keeping the entire graph and the embedding of each node in memory.
+                        * Propose Cluster-GCN [1] that exploits the graph clustering structure:
+                            * <span class='highlight'>Samples a block of nodes</span> that associate with a dense subgraph identifiedby a graph clustering algorithm
+                            * <span class='highlight'>Restricts the neighborhood</span> search within this subgraph
+                        * Cluster-GCN <span class='highlight'>significantly improved memory and computational efficiency</span>, which allows us to train much deeper GCN without much time and memory overhead.
+                        * 5-layer Cluster-GCN <span class='highlight'>achieves state-of-the-art test F1 score</span> 99.36 on the PPI dataset (the previous best result was 98.71)
+                        * [<a href='https://arxiv.org/pdf/1905.07953.pdf' target="_blank">Paper</a>], [<a href='https://github.com/google-research/google-research/tree/master/cluster_gcn' target="_blank">Code</a>]
+					</script>
+                </section>
+
+                <section data-markdown class='x-small'>
+                    <script type="text/template">
+                        ### Definition
+
+                        * Given graph $G = (\mathcal{V}, \mathcal{E}, A)$, number of vertices $N = |\mathcal{V}|$, number of edges $|\mathcal{E}|$
+                        * Adjacency matrix $A \in \mathbb{R}^{N \times N}$, where $(i, j)$ entry is 1 if there is an edge between i and j, 0 otherwise.
+                        * Feature matrix of N nodes: $X \in \mathbb{R}^{N \times F}$
+                        * $L$-layer GCN is defined by:$$Z^{(l+1)} = A' X^{(l)} W^{(l)}, X^{(l+1)}=\sigma(Z^{(l+1)})$$
+                            * where $X^{(l)} \in \mathbb{R}^{N \times F_l}$, ($X^{(0)}=X$), A' is the normalized and regularized matrix of A
+                        * Feature transformation matrix $W^{(l)} \in \mathbb{R}^{F_l \times F_{l+1}}$
+                        * For simplicity, assume that all layers have the same feature dim: $F_1=\cdots=F_L=F$
+                        * In semi-supervised node classification problem, learn weight matrices by minimizing the loss function:
+                        $$
+                        \mathcal{L} = \frac{1}{|\mathcal{Y}_t|} \sum_\{i\in \mathcal{Y}_t\} loss(y_i, z^{(L)}_i)
+                        $$
+                        * In practice, a cross-entropy loss is commonly used for node classification in multi-class or multi-label problems
+                    </script>
+                </section>
+
+
+
+
+                <section data-markdown class='toc off'>
+					<script type="text/template">
+                        ### Outline
+
+                        1. Background
+                            * What is GCN?
+                            * Applications of GCN
+                        2. Introduction
+                        3. <span class="on">Problems of current methods</span>
+                        4. Cluster-GCN
+                            * Vanilla Cluster-GCN
+                            * Stochastic Multiple Partitions
+                            * Training deeper GCNs
+                        5. Experiments & Results
+                        6. Conclusion
+					</script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ### Full-batch gradient descent (from [2])
+                        
+                        * Store all the embedding matrices $\\{Z^{(l)}\\}^L_{l=1}$ <br/>
+                            → Memory problem
+                        * Update the model once per epoch <br/>
+                            → require more epochs to converge
+                    </script>
+                </section>
+
+                <section>
+                    <h3>Mini-batch SGD (from [3])</h3>
+
+                    <ul>
+                        <li>Update model for each batch of nodes</li>
+                        <li>Significant computational overhead due to <span class='highlight'>neighborhood expansion problem</span></li>
+                        <li>Converge faster in terms of epochs but much slower per-epoch training time</li>
+                    </ul>
+                        <div class='definition xx-small'>
+                            <span class='highlight'>Embedding utilization</span>:<br/>
+                            If the node $i$’s embedding at $l$-th layer $z^{(l)}_i$ is computed and is reused $u$ times <br/>
+                            for the embedding computations at layer $l+1$, <br/>
+                            then we say the <span class='lightly-highlight'>embedding utilization</span> of $z^{(l)}_i$ is $u$.
+                        </div>
+                    <ul>
+                        <li>Embedding utilization u is small because graph is usually large and sparse</li>
+                    </ul>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ### VR-GCN (from [4]) (SoTA)
+
+                        - Reduce the size of neighborhood sampling nodes
+                        - Requires storing all the intermediate embeddings
+                    </script>
+                </section>
+
+
+
+
+
+                <section data-markdown class='toc off'>
+					<script type="text/template">
+                        ### Outline
+
+                        1. Background
+                            * What is GCN?
+                            * Applications of GCN
+                        2. Introduction 
+                        3. Problems of current methods
+                        4. <span class="on">Cluster-GCN
+                            * Vanilla Cluster-GCN
+                            * Stochastic Multiple Partitions
+                            * Training deeper GCNs
+                        </span>
+                        5. Experiments & Results
+                        6. Conclusion
+					</script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ### Key idea
+
+                        <div class='definition small'>
+                            Design a batch and the corresponding computation subgraph to <span class='highlight'>maximize the embedding utilization</span>.
+                        </div>
+
+                        * Set of node $\mathcal{B}$ from layer 1 to $L$, subgraph $A_{\mathcal{B},\mathcal{B}}$ (links within $\mathcal{B}$)
+                        * Embedding utilization is the <span class='highlight'>number of edges within</span> this batch $∥A_{\mathcal{B},\mathcal{B}}∥_0$
+                        * Maximize the embedding utilization by maximizing within-batch edges
+                        * Efficiency of SGD updates now relates to <span class='highlight'>graph clustering algorithm</span>
+                    </script>
+                </section>
+
+                <section data-markdown class='x-small'>
+                    <script type="text/template">
+                        ## Graph partitioning
+
+                        * Partition the graph $G$ into c groups: $\mathcal{V}=[\mathcal{V}_1,···\mathcal{V}_c]$, where $\mathcal{V}_t$ consists of the nodes in the $t$-th partition.
+                        $$\bar{G}=[G_1,···,G_c]=[\\{\mathcal{V}_1,\mathcal{E}_1\\},···,\\{Vc,\mathcal{E}_c\\}]$$
+                            * $\mathcal{E}_t$ only consists of the <span class='highlight'>links between nodes in $\mathcal{V}_t$</span>.
+                        * Adjacencty matrix A is partitioned into $c^2$ submatrices as:
+                        $$A = \bar{A} + \Delta = \begin{bmatrix} A_{11} & \cdots & A_{1c} \\\\ \vdots & \ddots & \vdots \\\\ A_{c1} & \cdots & A_{cc} \end{bmatrix} $$
+                        $$where\ \ \bar{A} = \begin{bmatrix} A_{11} & \cdots & 0 \\\\ \vdots & \ddots & \vdots \\\\ 0 & \cdots & A_{cc} \end{bmatrix}, \Delta = \begin{bmatrix} 0 & \cdots & A_{1c} \\\\ \vdots & \ddots & \vdots \\\\ A_{c1} & \cdots & 0 \end{bmatrix} $$ 
+                        * Also partition feature X and training labels Y according to $[\mathcal{V}_1,···\mathcal{V}_c]$ as $[X_1,···,X_c]$ and $[Y_1,···,Y_c]$
+                    </script>
+                </section>
+
+                <section data-markdown class='small'>
+                    <script type="text/template">
+                        ### Update Cluster-GCN
+
+                        * The final embedding matrix becomes
+                        $$
+                        Z^{(L)} = \bar{A}′σ(\bar{A}′σ(\cdots σ(\bar{A}′XW^{(0)})W^{(1)})\cdots)W^{(L−1)} \\\\
+                        \\\\
+                        = \begin{bmatrix} \bar A′_\{11\} σ(\bar A′_\{11\} σ(\cdots σ(\bar A′_\{11\}X_1W^{(0)})W^{(1)})\cdots)W^{(L−1)} \\\\ \vdots \\\\ \bar A′_\{cc\} σ(\bar A′_\{cc\} σ(\cdots σ(\bar A′_\{cc\}X_1W^{(0)})W^{(1)})\cdots)W^{(L−1)} \end{bmatrix}
+                        $$
+
+                        * The loss function can also be decomposed into
+
+                        $
+                        \mathcal{L}_{\bar A′} = \sum_t \frac{|\mathcal{V}_t|}{N} \mathcal{L}_\{\bar A′_\{tt\}\}
+                        $
+                        and
+                        $\mathcal{L}_\{\bar A′_\{tt\}\} = \frac{1}{|\mathcal{V}_t|} \sum_\{i\in \mathcal{V}_t\} loss(y_i, z^{(L)}_i)$
+
+                        * At each step, sample a cluster $\mathcal{V}_t$ and update $\{W^{(l)}\}^L_\{l=1\}$ based on the gradient of $\mathcal{L}_\{\bar A′_\{tt\}\}$
+                        
+                    </script>
+                </section>
+
+                <section data-markdown>
+					<script type="text/template">
+                        ### Efficiency of Cluster-GCN
+
+                        <small>Figure 1: The neighborhood expansion difference between <br/>traditional graph convolution and our proposed cluster approach</small><br/>
+                        <image src='images/cluster_gcn/figure1.png' width=40%/>
+
+                        <small>Table 1: Time and space complexity of GCN training algorithms</small>
+                        <image src='images/cluster_gcn/table1.png'/>
+					</script>
+                </section>
+
+                <section data-markdown class='small'>
+                    <script type="text/template">
+                        ### Stochastic Multiple Partitions (1)
+
+                        * Although Cluster-GCN achieves good computational and memory complexity, there are still 2 problems:
+                            * Some links (the $\Delta$ part) are removed
+                            * Graph clustering algorithm (such as Metis and Graclus) tend to bring similar nodes together → biased estimation of the full gradient
+
+                        <small><span style='font-size:80%;'>
+                            Figure 2: Histograms of label entropy within each batch using random partition vs clustering partition.
+                            Most clustering partitioned batches have low label entropy, while random partition gives larger label entropy although it is less efficient. 
+                            (partitioned on Reddit dataset with 300 clusters)</span></small><br/>
+                        <image src='images/cluster_gcn/figure2.png' width=25%/>
+                        * Clusters are biased towards some specific labels, then increase the variance across different batches.
+                        
+                    </script>
+                </section>
+
+                <section data-markdown class='small'>
+                    <script type="text/template">
+                        ### Stochastic Multiple Partitions (2)
+
+                        * To build a batch $\mathcal{B}$, randomly choose q clusters ($t_1, t_2, ..., t_q$)
+                        * Nodes of the batch are $\\{\mathcal{V}_\{t_1\}∪···∪\mathcal{V}_\{t_q\}\\}$
+                        * Also include <span class='highlight'>between-cluster links</span> in the batch to reduce variance across batches
+                        $$ \\{A_{ij}|i,j∈t_1,...,t_q\\} $$
+
+                        <div class='column'>
+                            <small><strong>Figure 3</strong>: The proposed stochastic multiple partitions scheme. 
+                                Same color blocks are in the same batch
+                            </small>
+                            <br/>
+                            <image src='images/cluster_gcn/figure3.png' width=100%/>
+                        </div>
+
+                        <div class='column'>
+                            <small><strong>Figure 4</strong>: Comparisons of choosing one cluster (300 partitions) vs multiple clusters (1500 partitions & q=5). 
+                            </small><br/>
+                            <image src='images/cluster_gcn/figure4.png' width=60%/>
+                            <br/>
+                            <small>(x-axis: epoch, y-axis: F1 score)</small>
+                        </div>                        
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ### Training deeper GCNs
+                        
+                        * Deeper model impede the information from the first few layers being passed through.
+                        * Propose
+                        $$ \tilde{A} = (D + I)^{-1}(A+I)$$ and apply <span class='highlight'>diagonal enhancement</span> technique
+                        $$ X^{l+1} = \sigma((\tilde{A}+\lambda diag(\tilde{A}))X^{(l)}W^{(l)})$$
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ### Cluster-GCN algorithm
+                        <image src='images/cluster_gcn/algo1.png' width=50%/>
+                    </script>
+                </section>
+
+
+
+
+
+                <section data-markdown class='toc off'>
+					<script type="text/template">
+                        ### Outline
+
+                        1. Background
+                            * What is GCN?
+                            * Applications of GCN
+                        2. Introduction
+                        3. Problems of current methods
+                        4. Cluster-GCN
+                            * Vanilla Cluster-GCN
+                            * Stochastic Multiple Partitions
+                            * Training deeper GCNs
+                        5. <span class="on">Experiments & Results</span>
+                        6. Conclusion
+					</script>
+                </section>
+
+                <section data-markdown class='small'>
+                    <script type="text/template">
+                        ### Experiments
+
+                        * Evaluate on multi-label and multi-class classficiation on <span class='highlight'>4 public datasets</span>
+                        * Compare with 2 SoTA methods
+                            * <span class='highlight'>VR-GCN</span> (from [4]): maintains historical embedding & expands to only a few neighbors
+                            * <span class='highlight'>GraphSAGE</span> (from [5]): samples a fixed number of neighbors per node.
+                        * <span class='highlight'>Cluster-GCN</span>:
+                            * Implemented with PyTorch <span class='lightly-highlight'>(Google Research, why PyTorch?)</span>
+                            * Adam optimizer, learning rate = 0.1, dropout rate=20%, zero weight decay
+                            * Number of partitions and clusters per batch are stated in Table 4.
+                        * All the experiments are run on 1 machine with NVIDIA Tesla V100 GPU (16GB mem), 20-core Intel Xeon CPU (2.20 GHz), and 192 GB of RAM.
+                        
+                        <div class='column'>
+                            <small>Table 3: Data statistics</small><br/>
+                            <image src='images/cluster_gcn/table3.png'/>
+                        </div>
+                        <div class='column'>
+                            <small>Table 4: The parameters used in the experiments</small><br/>
+                            <image src='images/cluster_gcn/table4.png'/>
+                        </div>
+                    </script>
+                </section>
+
+                <section data-markdown class='x-small'>
+					<script type="text/template">
+                        ### Results on median size datasets - Training time vs accuracy
+
+                        * Cluster-GCN is the fastest for both PPI and Reddit datasets
+                        * For Amazon data, Cluster-GCN is faster than VRGCN for 3-layer case, but slower for 2-layer and 4-layer cases.
+                        * Defense: Table 6 (VRGCN was implemented with TensorFlow)
+
+                        <div class='column' style='width:55%;'>
+                            <small><strong>Figure 6</strong>: Comparisons of different GCN training methods. We present the relation between training time in seconds (x-axis)and the validation F1 score (y-axis)</small><br/>
+                            <image src='images/cluster_gcn/figure6.png' width=100%/> 
+                        </div>
+                        <div class='column' style='width:38%;'>
+                            <small><strong>Table 6</strong>: Benchmarking on the Sparse Tensor operations in PyTorch and TensorFlow.
+                                    A network with two linear layers is used and the timing includes forward and backward operations. 
+                                    Numbers in the brackets indicate the size of hidden units in the first layer. Amazon data is used.
+                            </small><br/>
+                            <image src='images/cluster_gcn/table6.png' width=80%/> 
+                        </div>
+					</script>
+                </section>
+
+                <section data-markdown class='small'>
+					<script type="text/template">
+                        ### Results on median size datasets - Memory usage
+                        
+                        * <span class='highlight'>VRGCN</span> needs to <span class='highlight'>save historical embeddings</span> during training → consume more memory than Cluster-GCN
+                        * <span class='highlight'>GraphSAGE</span> also has higher memory requirement than Cluster-GCN due to the <span class='highlight'>exponential neighborhood</span> growing
+                        * When increasing the number of layers, Cluster-GCN’s memory usage does not increase a lot (extra variable introduced is the weight matrix $W^{(L)}$)
+
+                        <small>Table 5:  Comparisons of memory usages on different datasets. 
+                            <br/>
+                            Numbers in the brackets indicate the size of hidden units used in the model
+                        </small><br/>
+                        <image src='images/cluster_gcn/table5.png'/> 
+
+                        
+					</script>
+                </section>
+
+                <section data-markdown class='small'>
+					<script type="text/template">
+                        ### Amazon-2M
+
+                        * By far the largest public data for testing GCN is Reddit (232,965 nodes, 11,606,919 edges)
+                        * Build a much larger dataset, Amazon2M, to test the scalability of Cluster-GCN:
+                            * 2 millions nodes, 61 millions edges
+                            * Raw co-purchase data from Amazon-3M
+                            * Node: product; link: whether two products are purchased together.
+                            * Node feature: <span class='highlight'>bag-of-word features</span> from product descriptions, reduced to <span class='highlight'>100-dim</span> by PCA.
+                            * Use top-level categories as the label for product/node (Table 7)
+
+                        <small>Table 7: The most common categories in Amazon2M</small><br/>
+                        <image src='images/cluster_gcn/table7.png'/>
+
+                        
+					</script>
+                </section>
+
+                <section data-markdown class='small'>
+					<script type="text/template">
+                        ### Results on Amazon-2M
+
+                        * VRGCN is <span class='highlight'>faster than Cluster-GCN with 2-layer</span> GCN but <span class='highlight'>slower when increasing one layer</span> while achieving similar accuracy.
+                        * VRGCN is <span class='highlight'>using much more memory than Cluster-GCN</span> (5 times more for 3-layer case), and it is running <span class='highlight'>out of memory when training 4-layer</span> GCN
+                        * Cluster-GCN 
+                            * Does not need much additional memory when increasing the number of layers
+                            * Achieves the best accuracy with 4-layer GCN.
+
+                        <div class='column' style='width:55%;'>
+                            <small>Figure 6</small><br/>
+                            <image src='images/cluster_gcn/figure6gi.png' width=100%/>
+                        </div>
+                        <div class='column' style='width:45%;'>
+                            <small>Table 8:  Comparisons of running time, memory and testing accuracy (F1 score) for Amazon2M</small><br/>
+                            <image src='images/cluster_gcn/table8.png'/> 
+                        </div>
+					</script>
+                </section>
+
+                <section data-markdown class='small'>
+                    <script type="text/template">
+                        ### Training on deeper GCN (2)
+
+                        * Test GCNs with more layers
+                        * Running time of VRGCN grows exponentially, while the running time of Cluster-GCN only grows linearly (Table 9).
+                        * Evaluate diagonal enhancement techniques with PPI dataset (Table 11)
+                            * Case of 2 to 5 layers, the more layers the higher accuracy → deeper GCNs may be useful.
+                            * When 7 or 8 layers are used, the first three methods fail to converge within 200 epochs and get a dramatic loss of accuracy
+
+                        <div class='column' style='width:40%;'>
+                            <small>Table 9: Comparisons of running time when using different # of layers on PPI, 200 epochs</small><br/>
+                            <image src='images/cluster_gcn/table9.png'/>
+                        </div>
+                        <div class='column' style='width:60%;'>
+                            <small>Table 11: Comparisons of using different diagonal enhancement techniques on PPI. Red numbers indicate poor convergence.</small><br/>
+                            <image src='images/cluster_gcn/table11.png' width=80%/> 
+                        </div>
+
+                         
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ### Training on deeper GCN with diagonal enhancement
+
+                        * Detailed convergence of a 8-layer GCN in Figure 5. 
+                            * All methods except for the one using diagonal enhancement fail to converge.
+
+                        <small>Figure 5: Convergence figure on a 8-layer GCN. 
+                            <br/>
+                            (x-axis: # of epochs; y-axis: validation accuracy)
+                        </small><br/>
+                        <image src='images/cluster_gcn/figure5.png' width=30%/>
+                    </script>
+                </section>
+
+                <section data-markdown class='small'>
+                    <script type="text/template">
+                        ### State-of-The-art result
+
+                        * For PPI, Cluster-GCN can achieve the state-of-art result by training a 5-layer GCN with 2048 hidden units. 
+                        * For Reddit, a 4-layer GCN with 128 hidden units.
+                        
+                        <small>Table 10: State-of-the-art performance of testing accuracy reported in recent papers</small><br/>
+                        <image src='images/cluster_gcn/table10.png'/>
+                    </script>
+                </section>
+
+
+
+
+
+                <section data-markdown class='toc off'>
+					<script type="text/template">
+                        ### Outline
+
+                        1. Background
+                            * What is GCN?
+                            * Applications of GCN
+                        2. Introduction 
+                        3. Problems of current methods
+                        4. Cluster-GCN
+                            * Vanilla Cluster-GCN
+                            * Stochastic Multiple Partitions
+                            * Training deeper GCNs
+                        5. Experiments & Results
+                        6. <span class="on">Conclusion</span>
+					</script>
+                </section>
+
+                <section data-markdown>
+					<script type="text/template">
+                        ### Conclusion
+                        * Cluster-GCN is <span class='highlight'>fast</span> and <span class='highlight'>memory efficient</span>.
+                        * The method can train very deep GCN on large-scale graph
+                            * With 2 million nodes, the training time is less than an hour
+                            * Uses around 2G memory 
+                            * Achieves accuracy of 90.41 (F1 score)
+                        * Successfully <span class='highlight'>train much deeper GCNs</span>, which achieve <span class='highlight'>state-of-the-art test F1 score on PPI and Reddit</span> datasets.
+					</script>
+                </section>
+
+                <section>
+                    <h3>References</h3>
+                    <ul>
+                        <ol>
+                            <small>[1] Wei-Lin Chiang et. al., KDD 2019. Cluster-GCN: An Efficient Algorithm for Training Deep and Large Graph Convolutional Networks</small>
+                            <br/><br/>
+                        </ol>
+
+                        <ol>
+                            <small>[2] Thomas N. Kipf and Max Welling. ICLR 2017. Semi-Supervised Classification with Graph Convolutional Networks.</small>
+                            <br/><br/>
+                        </ol>
+
+                        <ol>
+                            <small>[3] William L. Hamilton, Rex Ying, and Jure Leskovec. NIPS 2017. Inductive Representation Learning on Large Graphs.</small>
+                            <br/><br/>
+                        </ol>
+
+                        <ol>
+                            <small>[4] Jianfei Chen, Jun Zhu, and Song Le. ICML 2018. Stochastic Training of Graph Convolutional Networks with Variance Reduction.</small>
+                        </ol>
+                    </ul>
+                        
+                    </script>
+                </section>
+
+
+                <section data-markdown>
+                    <script type="text/template">
+                        # Thank you!
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        # Q&A
+                    </script>
+                </section>
+			</div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				slideNumber: 'c/t',
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/math/math.js', async: true },
+                    { src: 'plugin/anything/anything.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

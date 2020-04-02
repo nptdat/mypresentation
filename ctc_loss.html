@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>ResearchMTG-CTC-loss</title>
+
+		<meta name="author" content="Dat Nguyen">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/monokai.css">
+        
+        <link rel="stylesheet" href="css/paper/ctc_loss.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+                    <h3>Connectionist Temporal Classification: Labelling Unsegmented Sequence Data with Recurrent Neural Networks</h3>
+                    <p>A. Graves et al., 2006</p>
+                    <br/>
+                    <small><p>Research MTG</p></small>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <small>2019/11/12</small>
+                    <br/>
+                    <small>Dat Nguyen</small>
+                </section>
+
+                <section class='small'>
+                    Paper on ICML'2006
+                    <br/>
+                    <image src='images/ctc_loss/icml06_paper.png' width=65% style="background-color:#fff;"/><br/>
+                    <small><a href='https://www.cs.toronto.edu/~graves/icml_2006.pdf'>https://www.cs.toronto.edu/~graves/icml_2006.pdf</a></small>
+                </section>
+
+                <section class='small'>
+                    <h3>Motivation</h3>
+
+                    <div>
+                        <ul>
+                            <li>Sequence-to-sequence tasks with <span class='highlight'>alignment</span> between input and output is <span class='highlight'>unknown</span></li>
+                            <li>Lengths of input and output are even <span class='highlight'>different</span></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <div class=column width=50%>
+                            <image src='images/ctc_loss/handwriting_recognition.svg' width=70% style="background-color:#fff;"/>
+                            <br/>
+                            <small><b>Handwriting recognition</b>: The input can be (x,y)(x,y) coordinates of a pen stroke or pixels in an image.</small>
+                        </div>
+
+                        <div class=column>
+                            <image src='images/ctc_loss/speech_recognition.svg' width=70% style="background-color:#fff;"/>
+                            <br/>
+                            <small><b>Speech recognition</b>: The input can be a spectrogram or some other frequency based feature extractor.</small>
+                        </div>
+                    </div>
+                    <br/><br/><br/>
+
+                    <small>Source: <a href='https://distill.pub/2017/ctc' target="_blank">https://distill.pub/2017/ctc</a></small>
+                    <br/><br/>
+                    <div class='definition small' style='padding:0.5em 0.2em 0.5em 0.2em;'>
+                        <span class='highlight'>Connectionist Temporal Classification (CTC)</span> was proposed to solve such problems
+                    </div>
+                </section>
+
+                <section class='small'>
+                    <h3>How CTC works?</h3>
+
+                    <section data-markdown class='medium'>
+                        <script type="text/template">
+                            1. For a given input sequence X, a Recurrent Neural Network (RNN) is used to predict <span class='highlight'>distribution of symbols in L at each time step t</span>.
+                            2. CTC defines <span class='highlight'>a mapping</span> from input sequence to output sequence for alignment-free.
+                            3. A <span class='highlight'>dynamic programming</span> technique is proposed to estimates <span class='highlight'>probabilities of all possible alignments</span> between X & Y.
+                            4. At training, CTC tunes its model parameters with its <span class='highlight'>loss function</span>, which is <span class='highlight'>negative log likelihood of probabilities of possible alignments</span>.
+                            5. At inference, CTC <span class='highlight'>chooses the most likely target sequence Y</span> based on the model parameters, then remove duplicate characters to produce final output.
+                        </script>                        
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>Example</h3>
+
+                    <section data-markdown class='medium'>
+                        <script type="text/template">
+                            * The following image shows the sound waves of 2 people saying "HELLO" with different speed.
+
+                            <div>
+                                <image src='images/ctc_loss/hello_slow_fast.png' width=40% style="background-color:#fff;"/><br/>
+                                <small>Source: <a href='https://stats.stackexchange.com/questions/320868/what-is-connectionist-temporal-classification-ctc' target="_blank">What is Connectionist Temporal Classification (CTC)? (on StackExchange)</a></small>
+                            </div>
+                        </script>                        
+                    </section>
+                </section>
+
+
+                <section class='medium'>
+                    <h3>Notations</h3>
+
+                    <section data-markdown>
+                        <script type="text/template">
+                            * Input sequence $\mathtt x = [x_1, ..., x_T]$
+                            * Output sequence $\mathtt y = [y_1, ..., y_u]$, where $y_i \in $ set of symbols L
+                            * Training data $\mathcal D = \\{(\mathtt x, \mathtt y)\\}$
+                            * $\pi_k^t$: probability of the symbol k at the time t, usually estimated by an RNN model.
+                            * Assumptions:
+                                1. Input sequences are longer or equal to output sequences, i.e. $u \leq T$
+                                2. Alignments between input sequences & output sequences are unknown
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>Many-to-one mapping for alignment-free</h3>
+                    <section data-markdown class='medium' style='margin-top:1em;'>
+                        <script type="text/template">
+                            * Because x are usually longer than y, one way to align x & y is to remove duplicate symbols in x to produce y.
+                            * For example, the following image shows a mapping <span class='highlight'>"ccaaat"</span> to <span class='highlight'>"cat"</span>
+
+                            <image src='images/ctc_loss/naive_alignment.svg' width=40% style="background-color:#fff;"/>
+                            <br/>
+                            <small>Source: <a href='https://distill.pub/2017/ctc' target="_blank">https://distill.pub/2017/ctc</a></small>
+
+                            <div class='definition small' style='padding:0.5em 0.2em 0.5em 0.2em; margin-bottom: 0;'>
+                                QUESTION: </br>
+                                How to represent <span class='highlight'>double symbols</span> (e.g., "HELLO") in target sequence?
+                            </div>
+
+                            <div class='definition small'>
+                                <div style='padding:0em 0.5em 0em 0.5em; margin-top:0; text-align: left;'>
+                                    * CTC adds a blank token $\epsilon$ to symbol dictionary L
+                                    <br/>
+                                    * Duplicate symbols are separated by $\epsilon$
+                                    <br/>
+                                    * Define L'= L $\cup $ {$\epsilon$}
+                                </div>
+                            </div>
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h3>Many-to-one mapping $\mathcal B$</h3>
+                    <section data-markdown class='medium' style='margin-top:1em;'>
+                        <script type="text/template">
+                            * $\mathcal B$(hhe$\epsilon\epsilon$lll$\epsilon$llo) = $\mathcal B$(he$\epsilon$l$\epsilon$lo) = hello
+
+                            <image src='images/ctc_loss/ctc_alignment_steps.svg' width=60% style="background-color:#fff;"/>
+                            <br/>
+                            <image src='images/ctc_loss/valid_invalid_alignments.svg' width=60% style="background-color:#fff;"/>
+                            <br/>
+                            <small>Source: <a href='https://distill.pub/2017/ctc' target="_blank">https://distill.pub/2017/ctc</a></small>
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>The final output sequence</h3>
+
+                    <section data-markdown class='medium' style='margin-top:1em;'>
+                        <script type="text/template">
+                            * The final output is identified by
+                                * Estimating the probability of an output sequence given an input sequence $$P(\mathtt y|\mathtt x)$$
+                                * Choosing the output sequence $\mathtt y$* maximizing the conditional probability as our final output $$\mathtt y^*=argmax_\mathtt y P(\mathtt y|\mathtt x)$$
+                            
+                            * The above probability is the marginal probabilities of all valid alignments $$P(\mathtt y|\mathtt x) = \sum_{\mathtt a\in\mathcal B ^{-1}(\mathtt y)}P(\mathtt a|\mathtt x) = \sum_{\mathtt a\in\mathcal B ^{-1}(\mathtt y)} \prod_{t=1}^T\pi_{a_t}^t$$
+                            $A$ is a valid alignment ($a_1, a_2, ..., a_T$), where $a_i\in L'$
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>From input to output</h3>
+
+                    <image src='images/ctc_loss/full_collapse_from_audio.svg' width=55% style="background-color:#fff;"/>
+                    <br/>
+                    <small>Source: <a href='https://distill.pub/2017/ctc' target="_blank">https://distill.pub/2017/ctc</a></small>
+                </section>
+
+                <section class='small'>
+                    <h3>How to compute $P(\mathtt y|\mathtt x)$</h3>
+                </section>
+
+                <section class='small'>
+                    <h3>Forward variables</h3>
+
+                    <ul>
+                        <li>
+                            Define an intermediate sequence $\mathtt z$ to enable $\epsilon$ in y as the following $$\mathtt z = [\epsilon, y_1, \epsilon, y_2, \epsilon, ...y_u, \epsilon]$$
+                            therefore, $|\mathtt z| = 2|\mathtt y| + 1 = 2u + 1$
+                        </li>
+                        <li>
+                            Define a <span class='highlight'>forward variable</span> $\alpha_{s,t}$ to be total probability of $\mathtt z_{1:s}$ at time t $$\alpha_{s,t} = P(\mathtt z_{1:s}|\mathtt x_{1:t}) = \sum_{\mathtt a \in L^T:\mathcal B(\mathtt a_{1:t})=\mathtt z_{1:s}}\prod_{i=1}^t \pi_{a_i}^i$$
+                        </li>
+                    </ul>
+                    <br/>
+                    <div class='definition small' style='padding:1em'>
+                        Our goal is to calculate $$P(\mathtt y|\mathtt x) = \alpha_{2u,T} + \alpha_{2u+1,T}$$
+                    </div>
+                </section>
+
+                <section class='medium'>
+                    <h3>How to compute $\alpha_{s,t}$?</h3>
+                    <ul>
+                        <li>
+                            We can brute-force to sum up all probabilities of all valid alignments ➔ <span class='highlight'>expensive computation</span>
+                        </li>
+                        <li>
+                            Compute $\alpha_{s,t}$ with <span class='highlight'>dynamic programming</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>How $\alpha_{s,t}$ depends on the previous positions?</h3>
+
+                    <section data-markdown class='medium' style='margin-top:1em;'>
+                        <script type="text/template">
+                            * At any position $s^{th}$ of a sequence $\mathtt z$, there are 3 cases
+                                * Case 1: $z_s$ is $\epsilon$
+                                <image src='images/ctc_loss/case1.png' width=85% style="background-color:#fff; margin-top:0;"/>
+                                <br/>
+                                
+                                * Case 2: $z_s$ is NOT $\epsilon$ and $z_{s-1} = z_s$
+                                <image src='images/ctc_loss/case2.png' width=85% style="background-color:#fff; margin-top:0;"/>
+                                <br/>
+
+                                * Case 3: $z_s$ is NOT $\epsilon$ and $z_{s-1} \ne z_s$
+                                <image src='images/ctc_loss/case3.png' width=85% style="background-color:#fff; margin-top:0;"/>
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>Forward algorithm to calculate $\alpha_{s,t}$ with dynamic programming</h3>
+
+                    <div class=column width=70%>
+                        <ul>
+                            <li>
+                                Initialization　　　　　
+                            </li>
+                        </ul>
+                        \[\begin{aligned}
+                        \alpha_{1, 1} &amp; =\pi_{\epsilon}^1 \\
+                        \alpha_{2, 1} &amp; =\pi_{y_1}^1 \\
+                        \alpha_{\gt2, 1} &amp; =0
+                        \end{aligned} \]
+                        <br/>
+
+                        <ul>
+                            <li>
+                                Recursively compute $\alpha_{s, t}$
+                            </li>
+                        </ul>
+                        \[\alpha_{s, t} = \begin{cases}
+                        (\alpha_{s-1, t-1} + \alpha_{s, t-1})  \pi_{z_s}^t & \text{if $z_s = \epsilon$ or $z_s = z_{s-2}$} \\
+                        (\alpha_{s-2, t-1} + \alpha_{s-1, t-1} + \alpha_{s, t-1})  \pi_{z_s}^t & otherwise
+                        \end{cases}\]
+                        </ul>
+                    </div>
+
+                    <div class=column width=30%>
+                        <image src='images/ctc_loss/forward.png' width=40% style="background-color:#fff;"/>
+                        <br/>
+                        <small>Source: <a href='https://www.cs.toronto.edu/~graves/icml_2006.pdf' target="_blank">Original CTC paper</a></small>
+                    </div>
+                </section>
+
+                <section class='small'>
+                    <h3>Calculate $\alpha_{s,t}$ with dynamic programming</h3>
+                    <ul>
+                        <li>
+                            Any valid alignment A must have a path in the following diagram
+                        </li>
+                    </ul>
+
+                    <image src='images/ctc_loss/ctc_cost.png' width=60% style="background-color:#fff;"/>
+                    <br/>
+                    <small>Source: <a href='https://distill.pub/2017/ctc' target="_blank">https://distill.pub/2017/ctc</a></small>
+                    <br/>
+
+                    <div class='definition small' style='padding:0.2em 0.5em 0em 0.5em'>
+                        Total probability for each out sequence $\mathtt y$ is computed as: $$P(\mathtt y|\mathtt x) = \alpha_{2u,T} + \alpha_{2u+1,T}$$
+                    </div>
+                </section>
+
+                <section class='small'>
+                    <h3>Loss function</h3>
+
+                    <ul>
+                        <li>
+                            We train our model with the aim to <span class='highlight'>maximize the likelihood</span> of the training data $\mathcal D$
+                        </li>
+                        <li>
+                            It is equivalent to <span class='highlight'>minimizing the negative log-likelihood</span>
+
+                            $$E = -\sum_{(\mathtt x, \mathtt y)\in \mathcal D}ln(p(\mathtt y|\mathtt x))$$
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Training the network</h3>
+
+                    <ul>
+                        <li>
+                            To train the network, we differentiate the loss function with respect to the network outputs $\pi_k^t$
+                        </li>
+                        <li>
+                            With a single sample $(\mathtt x, \mathtt y)$, we have:
+
+                            $$\frac{\partial E(\mathtt x, \mathtt y)}{\partial \pi_k^t} = -\frac{\partial ln(p(\mathtt y|\mathtt x))}{\partial \pi_k^t}$$
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Backward variables</h3>
+
+                    <ul>
+                        <li>
+                            To compute the differentiation more easier, similar to forward variable, we define a <span class='highlight'>backward variable</span> $\beta_{s,t}$ to be total probability of $\mathtt z_{s:|\mathtt z|}$ at time t as the following:
+                            \[\begin{aligned}
+                            \beta_{s,t} &amp; = P(\mathtt z_{s:|\mathtt z|}|\mathtt x_{t:T}) = \sum_{A \in L^T:\mathcal B(\mathtt a_{t:T})=\mathtt z_{s:|\mathtt z|}}\prod_{i=t}^T \pi_{a_i}^i
+                            \end{aligned} \]
+                        </li>
+
+                        <li>
+                            We also have the backward algorithm to compute $\beta_{s,t}$. Firstly, we initialize
+
+                            \[\begin{aligned}
+                            \beta_{|\mathtt z|, T} &amp; =\pi_{\epsilon}^1 \\
+                            \beta_{|\mathtt z|-1, T} &amp; =\pi_{y_u}^T \\
+                            \beta_{<|\mathtt z|-1, T} &amp; =0
+                            \end{aligned} \]
+                        </li>
+
+                        <li>
+                            Then, recursively compute $\beta_{s, t}$ backward
+
+                            \[\beta_{s, t} = \begin{cases}
+                            (\beta_{s, t+1} + \beta_{s+1, t+1}) \pi_{z_s}^t & \text{if $z_s = \epsilon$ or $z_{s+2} = z_s$} \\
+                            (\beta_{s, t+1} + \beta_{s+1, t+1} + \beta_{s+2, t+1})  \pi_{z_s}^t & otherwise
+                            \end{cases}\]
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Differentiation of the loss with respect to network outputs (1)</h3>
+
+                    <ul>
+                        <li>
+                            The total probability of all paths going through the symbol $z_s$ at time t is the <span class='highlight'>product of forward & backward variables</span> at the position s & t
+                        </li>
+                        <li>
+                            Furthermore, looking at the definition of the forward & backward variables $\alpha_{s,t}$ & $\beta_{s,t}$, the output $\pi_{a_t}^t$ is included in both of them. So,
+                        </li>
+
+                            $$\alpha_{s,t} \beta_{s,t} = \sum_{\mathtt a \in \mathcal B^{-1}(\mathtt y):\mathtt a_t=\mathtt z_s} \pi_{a_t}^t \prod_{i=1}^T \pi_{a_i}^i$$
+
+                        <li>
+                            Therefore
+                        </li>
+
+                            $$\frac{\alpha_{s,t} \beta_{s,t}}{\pi_{a_t}^t} = \sum_{\mathtt a \in \mathcal B^{-1}(\mathtt y):\mathtt a_t=\mathtt z_s}  \prod_{i=1}^T \pi_{a_i}^i = \sum_{\mathtt a \in \mathcal B^{-1}(\mathtt y):\mathtt a_t=\mathtt z_s} p(\mathtt a|\mathtt x)$$                            
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Differentiation of the loss with respect to network outputs (2)</h3>
+
+                    <ul>
+                        <li>
+                            The probability of $p(\mathtt y|\mathtt x)$ should be sum from all positions on the column t.
+                        </li>
+
+                            $$p(\mathtt y|\mathtt x) = \sum_{s=1}^{2u+1} \frac{\alpha_{s,t} \beta_{s,t}}{\pi_{z_s}^t}$$
+
+                        <li>
+                            When we differentiate the probability with respect to $\pi_k^t$, only the paths going through symbol k at time t are considered (probabilities of all other paths are constant with respect to $\pi_k^t$). Defining $lab(y, k)$ = {s: $z_s=k$}, we have
+                        </li>
+
+                        
+
+                            $$\frac{\partial p(\mathtt y|\mathtt x)}{\partial \pi_k^t} = \frac{1}{{\pi_k^t}^2} \sum_{\mathtt s \in lab(y, k)} \alpha_{s,t} \beta_{s,t}$$
+                        
+                        <li>
+                            Finally,
+                        </li>
+
+                            $$\frac{\partial ln(p(\mathtt y|\mathtt x))}{\partial \pi_k^t} = \frac{1}{p(\mathtt y|\mathtt x)} \frac{\partial p(\mathtt y|\mathtt x)}{\partial \pi_k^t} = \frac{1}{\alpha_{2u}^T + \alpha_{2u+1}^T} \frac{1}{{\pi_k^t}^2} \sum_{\mathtt s \in lab(y, k)} \alpha_{s,t} \beta_{s,t}$$
+                    </ul>
+                </section>
+
+                
+
+                <section class='small'>
+                    <h3>Inference</h3>
+                    <ul>
+                        <li>
+                            Vanilla beam search can be used to choose a good path, then apply the $\mathcal B$ mapping to obtain the output sequence.
+                        </li>
+                    </ul>
+
+                    <image src='images/ctc_loss/beam_search.svg' width=50% style="background-color:#fff;"/>
+                    <br/>
+                    <small>Source: <a href='https://distill.pub/2017/ctc' target="_blank">https://distill.pub/2017/ctc</a></small>
+
+                    <ul>
+                        <li>
+                            However, it search for alignments based on the probability of each alignment itself.
+                        </li>
+                        <li>
+                            What we want is to search for output sequence $\mathtt y$ which have best sum probabilities from multiple paths A, where $A \in L^T:\mathcal B(A) = \mathtt y$
+                        </li>                       
+                    </ul>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Prefix search encoding</h3>
+                    <ul>
+                        <li>
+                            CTC customizes beam search to search for output sequence from multiple alignments.
+                        </li>
+                        <li>
+                            At each step, it stores the <span class='highlight'>prefixes</span> after applying the mapping $\mathcal B$
+                        </li>
+                        <li>
+                            The score of a prefix is calculated from <span class='highlight'>all alignments</span> which map to it
+                        </li>
+                        <li>
+                            However, for each prefix, CTC stores 2 scores: one for those <span class='highlight'>ending with $\epsilon$</span> and one for those <span class='highlight'>not ending with $\epsilon$</span>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Example of Prefix search encoding</h3>
+                    <image src='images/ctc_loss/ctc_beam_search1.png' width=65% style="background-color:#fff;"/>
+                    <br/>
+
+                    <image src='images/ctc_loss/ctc_beam_search2.png' width=65% style="background-color:#fff;"/>
+                    <br/>
+                    <small>Source: <a href='https://distill.pub/2017/ctc' target="_blank">https://distill.pub/2017/ctc</a></small>
+                </section>
+			</div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				slideNumber: 'c/t',
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/math/math.js', async: true },
+                    { src: 'plugin/anything/anything.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
