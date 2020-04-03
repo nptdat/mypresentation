@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>ResearchMTG-CTC-loss</title>
+
+		<meta name="author" content="Dat Nguyen">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/league.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/monokai.css">
+        
+        <link rel="stylesheet" href="css/paper/AVITM.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+                    <h4>LDA seminar</h4>
+                    <h3>AUTOENCODING VARIATIONAL INFERENCE <br/>FOR TOPIC MODELS</h3>
+                    <p>Akash Srivastava & Charles Sutton</p>
+                    <p>ICLR'17</p>
+                    <br/>
+                    <small><p>2020/4/3</p></small>
+                    <br/>
+                    <small>Dat Nguyen</small>
+                </section>
+
+                <section class='small'>
+                    <h3>References</h3>
+
+                    <section data-markdown class='medium'>
+                        <script type="text/template">
+                            1. AUTOENCODING VARIATIONAL INFERENCE FOR TOPIC MODELS (ICLR'17).
+                                * https://homepages.inf.ed.ac.uk/csutton/publications/avitm.pdf
+                            2. Auto-Encoding Variational Bayes (ICLR'14)
+                                * https://arxiv.org/pdf/1312.6114.pdf
+                            3. Automatic autoencoding variational Bayes for latent dirichlet allocation with PyMC3 (tutorial)
+                                * https://docs.pymc.io/notebooks/lda-advi-aevb.html
+                        </script>                        
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>Notations</h3>
+                </section>
+
+                <section class='small'>
+                    <h3>Variational Inference</h3>
+                </section>
+
+                <section class='small'>
+                    <h3>Estimate posterior probability</h3>
+                    <section data-markdown class='medium'>
+                        <script type="text/template">
+                            * Let x be observation, z be latent variable parameterized by $\theta$
+                            * We interested in calculating the posterior
+                            $$p_{\theta}(z|x)=\frac{p_{\theta}(x|z)p_{\theta}(x)}{\int_z p_{\theta}(x, z)}$$
+
+                            * In many cases, the denominator cannot be calculated analytically
+                            * We come up with Variational Inference (VI): 
+
+                            <div class='definition small' style='padding:0.5em 0.2em 0.5em 0.2em; margin-bottom: 0;'>
+                            Find a distribution q which is parameterized by $\phi$,<br/>
+                            such that q is as closed to p as possible
+                            </div>
+                            </div>
+                        </script>                        
+                    </section>
+                </section>
+
+                <section class='x-small'>
+                    <h3>KL Divergence</h3>
+                    <div>
+                        <ul>
+                            <li>
+                                It means, we need to minimize
+                                $$KL(q_{\phi}(z|x)||p_{\theta}(z|x))$$
+                                , where $\phi$ is called variational parameters
+                            </li>
+                        </ul>
+                    </div>
+
+                    \begin{align}
+                    KL(q_{\phi}(z|x)||p_{\theta}(z|x)) & = \int_z q_{\phi}(z|x)\log\frac{q_{\phi}(z|x)}{p_{\theta}(z|x)} \\
+                    & = \int_z q_{\phi}(z|x) [\log q_{\phi}(z|x) + p_{\theta}(x) - p_{\theta}(x,z)] \\
+                    & = \int_z q_{\phi}(z|x) \log \frac{q_{\phi}(z|x)}{p_{\theta}(x, z)} + \int_z q_{\phi}(z|x) \log p_{\theta}(x) \\
+                    & = \int_z q_{\phi}(z|x) \log \frac{q_{\phi}(z|x)}{p_{\theta}(x, z)} + \log p_{\theta}(x)\\
+                    \end{align}
+                </section>
+
+                
+                <section class='small'>
+                    <h3>Evidence Lower Bound</h3>
+
+                    <ul>
+                        <li>
+                            Let $\mathcal L(\theta,\phi; x) = - \int_z q_{\phi}(z|x) \log \frac{q_{\phi}(z|x)}{p_{\theta}(x, z)}$. Then,
+                            $$\mathcal L(\theta,\phi; x) = \log p_{\theta}(x) - KL(q_{\phi}(z|x)||p_{\theta}(z|x)) $$
+                        </li>
+
+                        <li>
+                            Since KL divergence $\ge0$, we have $\mathcal L(\theta,\phi; x) \le \log p_{\theta}(x)$
+                        </li>
+
+                        <li>
+                            $L(\theta,\phi)$ is called <span class='highlight'>Evidence LOwer Bound</span> (or <span class='highlight'>ELBO</span>)
+                        </li>
+
+                        <li>
+                            Minimizing the above KL equals to maximizing $\mathcal L(\theta,\phi; x)$
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Optimizing the ELBO</h3>
+
+                    <ul>
+                        <li>
+                            Our next goal is to optimize $\mathcal L(\theta,\phi; x)$ with respect to both $\theta$ and $\phi$
+                        </li>
+
+                        <li>
+                            Rewrite $\mathcal L$
+                            $$\mathcal L(\theta,\phi; x) = E_{q_{\phi}(z|x)}[\log p_{\theta}(x, z) - q_{\phi}(z|x)]$$
+                        </li>
+
+                        <li>
+                            Monte Carlo estimate of $\mathcal L$ with a of samples $z^{(l)} \sim q_{\phi}(z|x), l=1,..., L$ gives
+                            $$\mathcal L(\theta,\phi; x) \approx \frac{1}{L}\sum_{l=1}^{L}\log p_{\theta}(x, z^{(l)}) - \log q_{\phi}(z^{(l)}|x)$$
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Gradient of ELBO wrt $\theta$</h3>
+
+                    <ul>
+                        <li>
+                            $\nabla_{\theta}\mathcal L(\theta,\phi; x)$ is easily estimated as
+                            $$
+                            \begin{align}
+                            \nabla_{\theta}\mathcal L(\theta,\phi; x) & \approx \nabla_{\theta}\frac{1}{L}(\sum_{l=1}^{L}\log p_{\theta}(x, z^{(l)}) - q_{\phi}(z^{(l)}|x)) \\
+                            & \approx \frac{1}{L}\sum_{l=1}^{L} (\nabla_{\theta} \log p_{\theta}(x, z^{(l)}) - \nabla_{\theta} \log q_{\phi}(z^{(l)}|x)) \\
+                            & \approx \frac{1}{L}\sum_{l=1}^{L} \nabla_{\theta} \log p_{\theta}(x, z^{(l)}) \\
+                            \end{align}
+                            $$
+                            , where $z^{(l)} \sim q_{\phi}(z|x)$
+                        </li>
+                        <li>
+                            We <span class='highlight'>move the gradient op into the sum</span> because $\theta$ is independent from $q_{\phi}(z|x)$
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Gradient of ELBO wrt $\phi$</h3>
+
+                    <ul>
+                        <li>
+                            The gradient $\nabla_{\phi} E_{z \sim q_{\phi}(z|x)}[f(z)]$ is more <span class='highlight'>difficult</span> because $\phi$ appears in the distribution wrt which the expectation is taken, we cannot push the gradient op into the sum. 
+                            <br/>
+                            ($f(z) = \log p_{\theta}(x, z) - \log q_{\phi}(z|x)$)
+                        </li>
+                        <li>
+                            (Kingma & Welling 2014) introduced <span class='highlight'>reparameterization trick</span> to solve this problem
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Reparameterization trick</h3>
+                    <image src='images/avitm/reparametererization_trick.png' width=35% style="background-color:#fff; margin-top:0;"/>
+                    <ul>
+                        <li>
+                            Define an auxiliary variable $\epsilon \sim p(\epsilon)$ and a differentiable transformation $g_{\phi}$ such that $z=g_{\phi}(\epsilon, x)$, then
+                            $$
+                            \mathcal L(\theta,\phi; x) = E_{z \sim q_{\phi}(z|x)}[f(z)] = E_{\epsilon \sim p(\epsilon)}[f(g_{\phi}(\epsilon, x))]
+                            $$
+                        </li>
+                        <li>
+                            Gradient of ELBO wrt $\phi$ is
+                            $$
+                            \nabla_{\phi}\mathcal L(\theta,\phi; x) = \nabla_{\phi}\mathcal E_{\epsilon \sim p(\epsilon)}[f(g_{\phi}(\epsilon, x))] = E_{\epsilon \sim p(\epsilon)}[\nabla_{\phi}\mathcal f(g_{\phi}(\epsilon, x))]
+                            $$
+                        </li>
+                    </ul>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Variational Autoencoder Variational Bayes</h3>
+                    <ul>
+                        <li>
+                            (Kingma & Welling 2014)
+                            <ul>
+                                <li>
+                                    Rewrite the ELBO
+                                    $$
+                                    \begin{align}
+                                    \mathcal L(\theta,\phi; x) & = - \int_z q_{\phi}(z|x) \log \frac{q_{\phi}(z|x)}{p_{\theta}(x, z)} = E_{q_{\phi}(z|x)} [- \log q_{\phi}(z|x) + \log p_{\theta}(x, z)] \\
+                                    & = E_{q_{\phi}(z|x)} [- \log q_{\phi}(z|x) + \log p_{\theta}(x|z) + \log p_{\theta}(z)] \\
+                                    & = E_{q_{\phi}(z|x)} [- \log q_{\phi}(z|x) + \log p_{\theta}(z)] + E_{q_{\phi}(z|x)} [\log p_{\theta}(x|z)] \\
+                                    & = -KL(q_{\phi}(z|x)||p_{\theta}(z)) + E_{q_{\phi}(z|x)} [\log p_{\theta}(x|z)] \\
+                                    \end{align}
+                                    $$
+                                </li>
+                                <li>
+                                    Use neural network to maximize ELBO
+                                    <div style='text-align:center; margin-top:0.5em;'>
+                                        <image src='images/avitm/auto_encoder.png' width=35% style="background-color:#fff; margin-top:0;"/>
+                                    </div>
+                                </li>
+                                <li>
+                                    The Encoder (corresponds to the 1st term, works as a regularizer) is to sample $z \sim q_{\phi}(z|x)$
+                                </li>
+                                <li>
+                                    The Decoder (corresponds to the 2nd term, works as a reconstruction loss) is to sample $x \sim p_{\theta}(x|z)$
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>LDA recap</h3>
+                    <ul>
+                        <li>
+                            LDA procedure to generate a document $w$
+                            <br/>
+                            <div style='text-align:center; float:left; width: 50%; padding:0;'>
+                                <image src='images/avitm/lda_generative.png' width=90% style="margin-top:0.5em;"/>
+                            </div>
+                            <div style='float:right; width: 45%; text-align:left; font-size: medium;'>
+                                $K$: num of topics, $V$: dictionary size <br/>
+                                $\beta \in \mathbb R^{VxK}$: term-topic matrix <br/>
+                                $\alpha \in \mathbb R^K$: params of Dirichlet distribution <br/>
+                                $\theta \in \mathbb R^K$: topic distribution of a document <br/>
+                                $w$: document ($w_n$: word $n^{th}$ of the document $w$) <br/>
+                                $z_n$: topic at word $n^{th}$ of a document <br/>
+                            </div>
+                            <div style='clear:both;border:'></div>
+                        </li>
+                        <li>
+                            Joint probability of $\theta, z, w$ given $\alpha$ & $\beta$ is
+                            $$
+                            p(\theta, z, w|\alpha, \beta) = p(\theta|\alpha) \prod_{n=1}^N p(z_n|\theta)\ p(w_n|z_n, \beta)
+                            $$
+                        </li>
+                        <li>
+                            Integrating over $\theta$ and summing over $z$ gives
+                            <div style='text-align:center;'>
+                                <image src='images/avitm/lda_likelihood_w.png' width=60% style="margin-top:0.5em;"/>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Mean-field variational inference for LDA</h3>
+                    <ul>
+                        <li>
+                            Mean-field VI introduces $\gamma$ over $\theta$ and $\phi$ over $z$ to decouple $\theta$ and $z$
+                        </li>
+                        <li>
+                            It also assumes the independence of the variables
+                            $$
+                            q_{\phi}(z) = \prod_{n}q_{\phi}(z_n) \\
+                            q(\theta, z|\gamma, \phi) = q_{\gamma}(\theta) \prod_{n}q_{\phi}(z_n)
+                            $$
+                        </li>
+                        <li>
+                            The $q(\theta, z|\gamma, \phi)$ is used to approximate the posterior $p(\theta, z|w, \alpha, \beta)$
+                        </li>
+                        <li>
+                            The optimization problem in LDA is to minimize
+                        </li>
+                    </ul>
+                    <div style='text-align:center;'>
+                        <image src='images/avitm/lda_mean_field.png' width=60% style="margin-top:0.5em;"/>
+                    </div>
+                </section>
+
+                <section class='small'>
+                    <h3>AEVB for LDA</h3>
+                    <ul>
+                        <li>
+                            Provide a <span class='highlight'>black box</span> optimizer for ELBO, using Neural Network
+                        </li>
+                        <li>
+                            Rewrite the ELBO for LDA as
+                            <div style='text-align:center;'>
+                                <image src='images/avitm/lda_aevb.png' width=60% style="margin-top:0.5em;"/>
+                            </div>
+                        </li>
+                        <li>
+                            The 1st term tries to match the variational posterior to the prior of the latent variables
+                        </li>
+                        <li>
+                            The 2nd term is to ensure that the variational posterior is good to explain the data
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>AEVB for LDA</h3>
+                    <ul>
+                        <li>
+                            Provide a <span class='highlight'>black box</span> optimizer for ELBO, using Neural Network
+                        </li>
+                        <li>
+                            Rewrite the ELBO for LDA as
+                            <div style='text-align:center;'>
+                                <image src='images/avitm/lda_aevb.png' width=60% style="margin-top:0.5em;"/>
+                            </div>
+                        </li>
+                        <li>
+                            The 1st term tries to match the variational posterior to the prior of the latent variables
+                        </li>
+                        <li>
+                            The 2nd term is to ensure that the variational posterior is good to explain the data
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Problem when applying AEVB to LDA</h3>
+                    <ul>
+                        <li>
+                            It is necessary to define reparameterization functions for $q_{\theta}$ and $q(z_n)$ reparameterization trick
+                        </li>
+                        <li>
+                            Difficulty is at the reparameterization function for $q_{\theta}$
+                            <ul>
+                                <li>
+                                    If choose $q_{\theta}$ to be Dirichlet, it's difficult (<span class='highlight'>why?</span>)
+                                </li>
+                                <li>
+                                    If choose Gaussian or ligistic normal for $q_{\theta}$, KL term in (3) has problem
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Dealing with z</h3>
+                    <ul>
+                        <li>
+                            In LDA, $z$ is discret. This lead to difficulty to define reparameterization function for z.
+                        </li>
+                        <li>
+                            But z can be collapsed as the followings:    
+                            <ul>
+                                <li>
+                                    According to the LDA generative model
+                                    $$
+                                    p(w_n|\theta, \beta) = \sum_{z_n=1}^K p(w_n|z_n, \beta) p(z_n|\theta)
+                                    $$
+                                </li>
+                                <li>
+                                    Replace $\sum_{z_n=1}^K p(w_n|z_n, \beta) p(z_n|\theta)$ in (1) by $p(w_n|\theta, \beta)$, we have
+                                    <br/>
+                                    <div style='text-align:center;'>
+                                        <image src='images/avitm/lda_collapse_z.png' width=60% style="background-color:#fff; margin-top:0;"/>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            Next, we are going to estimate $p(\theta|\alpha)$
+                        </li>
+                        <li>
+                            In LDA, the keypoint is that the topic proportion $p(\theta|\alpha)$ is from Dirichlet distribution.
+                        </li>
+                        <li>
+                            But it is difficult to define an effective reparameterization function for the Dirichlet distribution in AEVB
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='x-small'>
+                    <h3>Working with Dirichlet beliefs using Laplace Approximation</h3>
+                    <ul>
+                        <li>
+                            Construct a Laplace approximation to the Dirichlet prior
+                            <ul>
+                                <li>
+                                    Replace the simplex in Dirichlet by softmax basis
+                                </li>
+                                <li>
+                                    The Dirichlet prior in softmax basis over the softmax variable $h$ will be
+                                    <div style='text-align:center; margin-top:0.5em;'>
+                                        <image src='images/avitm/laplace_approximation.png' width=60% style="background-color:#fff; margin-top:0;"/>
+                                    </div>
+                                    , where $\theta=\sigma(h)$, and $\sigma$ is the softmax function.
+                                </li>
+
+                            </ul>
+                        </li>
+
+                        <li>
+                            Laplace approximation approximates the Dirichlet prior $p(\theta|\alpha)$ as a multivariate normal with mean $\mu_1$ and covariance matrix $\sum_1$, where
+                            <div style='text-align:center; margin-top:0.5em;'>
+                                <image src='images/avitm/laplace_approximation1.png' width=60% style="background-color:#fff; margin-top:0;"/>
+                            </div>
+                            , where $\Sigma_1$ is a diagonal covariance matrix
+                        </li>
+                        <li>
+                            Approximate to the Dirichlet prior $p(\theta|\alpha)$ is $\hat p(\theta|\mu_1, \sum_1)=\mathcal L \mathcal N(\theta|\mu_1, \sum_1)$, a logistic normal distribution.                            
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='x-small'>
+                    <h3>Variational objective</h3>
+                    <ul>
+                        <li>
+                            Define 2 feed forward networks $f_\mu$ and $f_\Sigma$ with parameters $\delta$ (shared weights)
+                        </li>
+
+                        <li>
+                            Each network output a K-dim vector
+                        </li>
+
+                        <li>
+                            Build mean $\mu_0 = f_{\mu}(w, \delta)$ and covariance matrix $\Sigma_0 = diag(f_{\Sigma}(w, \delta))$
+                        </li>
+
+                        <li>
+                            Generate samples from $q_{\theta}$ by sampling $\epsilon \sim \mathcal N(0, I)$
+                            $$
+                            \theta = \sigma(\mu_0 + \Sigma_0^{1/2}\epsilon)
+                            $$
+                        </li>
+
+                        <li>
+                            The ELBO is rewritten as
+                            <div style='text-align:center; margin-top:0.5em;'>
+                                <image src='images/avitm/ELBO_loss.png' width=75% style="background-color:#fff; margin-top:0;"/>
+                            </div>
+                            , where D is the num of documents
+                        </li>
+                        <li>
+                            The 1st term is the multivariate normal distribution of the KL Divergence term in (3) ($KL(\mathcal N_0||\mathcal N_1)$)
+                        </li>
+                        <li>
+                            The 2nd term is the reconstruction error.
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Network architecture</h3>
+
+                    <div style='text-align:center; margin-top:0.5em;'>
+                        <image src='images/avitm/network.png' width=50% style="background-color:#fff; margin-top:0;"/>
+                    </div>
+                </section>
+
+                <section class='small'>
+                    <h3>Training strategy to deal with component collapsing</h3>
+
+                    ...
+                </section>
+
+                <section class='small'>
+                    <h3>ProdLDA: Products of experts</h3>
+
+                    ...
+                </section>
+
+
+                <section class='small'>
+                    <h3>Results</h3>
+
+                    <div style='text-align:center; margin-top:0.5em;'>
+                        <image src='images/avitm/result_topic_coherence.png' width=75% style="background-color:#fff; margin-top:0;"/>
+
+                        <image src='images/avitm/result2.png' width=75% style="background-color:#fff; margin-top:0;"/>
+                    </div>
+                </section>
+
+                <section class='small'>
+                    <h3>Results</h3>
+
+                    <div style='text-align:center; margin-top:0.5em;'>
+                        <image src='images/avitm/result_prior_assumption_effect.png' width=75% style="background-color:#fff; margin-top:0;"/>
+                    </div>
+                </section>
+
+                <section class='small'>
+                    <h3>Summary</h3>
+                    <ul>
+                        <li>
+                            AVITM proposed some technique to apply VAE to LDA
+                            <ul>
+                                <li>
+                                    * Laplace approximation to the Dirichlet prior
+                                </li>
+                                <li>
+                                    * Tuning of momentum for training the network
+                                </li>
+                                <li>
+                                    * The use of Batch Normalization
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            Advantages of AVITM
+                            <ul>
+                                <li>
+                                    * Return consistently better topics than LDA in terms of topic coherent
+                                </li>
+                                <li>
+                                    * Fast and efficient like standard mean-field. For inference, AVITM is much faster than mean-field.
+                                </li>
+                                <li>
+                                    * Does not require math derivations to handle changes in the model (blackbox) -> can be easily applied to wide range of topic models.
+                                </li>
+                            </ul>
+                        </li>
+
+                    </ul>
+                </section>
+
+                <section class='x-small'>
+                    <h3>References</h3>
+                    <section data-markdown class='medium'>
+                        <script type="text/template">
+                            1. AUTOENCODING VARIATIONAL INFERENCE FOR TOPIC MODELS (ICLR'17)
+                                * https://homepages.inf.ed.ac.uk/csutton/publications/avitm.pdf
+                            2. Auto-Encoding Variational Bayes (ICLR'14)
+                                * https://arxiv.org/pdf/1312.6114.pdf
+                            3. VARIATIONAL INFERENCE: FOUNDATIONS AND INNOVATIONS
+                                * http://www.cs.columbia.edu/~blei/talks/Blei_VI_tutorial.pdf
+                            4. Automatic autoencoding variational Bayes for latent dirichlet allocation with PyMC3 (tutorial)
+                                * https://docs.pymc.io/notebooks/lda-advi-aevb.html
+                        </script>                        
+                    </section>
+                </section>
+			</div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				slideNumber: 'c/t',
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/math/math.js', async: true },
+                    { src: 'plugin/anything/anything.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
