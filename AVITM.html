@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>ResearchMTG-CTC-loss</title>
+		<title>LDA seminar: AutoEncoding Variational Inference for Topic Models</title>
 
 		<meta name="author" content="Dat Nguyen">
 
@@ -51,25 +51,6 @@
                     <small><p>2020/4/3</p></small>
                     <br/>
                     <small>Dat Nguyen</small>
-                </section>
-
-                <section class='small'>
-                    <h3>References</h3>
-
-                    <section data-markdown class='medium'>
-                        <script type="text/template">
-                            1. AUTOENCODING VARIATIONAL INFERENCE FOR TOPIC MODELS (ICLR'17).
-                                * https://homepages.inf.ed.ac.uk/csutton/publications/avitm.pdf
-                            2. Auto-Encoding Variational Bayes (ICLR'14)
-                                * https://arxiv.org/pdf/1312.6114.pdf
-                            3. Automatic autoencoding variational Bayes for latent dirichlet allocation with PyMC3 (tutorial)
-                                * https://docs.pymc.io/notebooks/lda-advi-aevb.html
-                        </script>                        
-                    </section>
-                </section>
-
-                <section class='small'>
-                    <h3>Notations</h3>
                 </section>
 
                 <section class='small'>
@@ -131,7 +112,7 @@
                         </li>
 
                         <li>
-                            $L(\theta,\phi)$ is called <span class='highlight'>Evidence LOwer Bound</span> (or <span class='highlight'>ELBO</span>)
+                            $L(\theta,\phi)$ is called <span class='highlight'>Evidence Lower BOund</span> (or <span class='highlight'>ELBO</span>)
                         </li>
 
                         <li>
@@ -150,7 +131,7 @@
 
                         <li>
                             Rewrite $\mathcal L$
-                            $$\mathcal L(\theta,\phi; x) = E_{q_{\phi}(z|x)}[\log p_{\theta}(x, z) - q_{\phi}(z|x)]$$
+                            $$\mathcal L(\theta,\phi; x) = E_{q_{\phi}(z|x)}[\log p_{\theta}(x, z) - \log q_{\phi}(z|x)]$$
                         </li>
 
                         <li>
@@ -168,7 +149,7 @@
                             $\nabla_{\theta}\mathcal L(\theta,\phi; x)$ is easily estimated as
                             $$
                             \begin{align}
-                            \nabla_{\theta}\mathcal L(\theta,\phi; x) & \approx \nabla_{\theta}\frac{1}{L}(\sum_{l=1}^{L}\log p_{\theta}(x, z^{(l)}) - q_{\phi}(z^{(l)}|x)) \\
+                            \nabla_{\theta}\mathcal L(\theta,\phi; x) & \approx \nabla_{\theta}\frac{1}{L}(\sum_{l=1}^{L}\log p_{\theta}(x, z^{(l)}) - \log q_{\phi}(z^{(l)}|x)) \\
                             & \approx \frac{1}{L}\sum_{l=1}^{L} (\nabla_{\theta} \log p_{\theta}(x, z^{(l)}) - \nabla_{\theta} \log q_{\phi}(z^{(l)}|x)) \\
                             & \approx \frac{1}{L}\sum_{l=1}^{L} \nabla_{\theta} \log p_{\theta}(x, z^{(l)}) \\
                             \end{align}
@@ -331,27 +312,6 @@
                 </section>
 
                 <section class='small'>
-                    <h3>AEVB for LDA</h3>
-                    <ul>
-                        <li>
-                            Provide a <span class='highlight'>black box</span> optimizer for ELBO, using Neural Network
-                        </li>
-                        <li>
-                            Rewrite the ELBO for LDA as
-                            <div style='text-align:center;'>
-                                <image src='images/avitm/lda_aevb.png' width=60% style="margin-top:0.5em;"/>
-                            </div>
-                        </li>
-                        <li>
-                            The 1st term tries to match the variational posterior to the prior of the latent variables
-                        </li>
-                        <li>
-                            The 2nd term is to ensure that the variational posterior is good to explain the data
-                        </li>
-                    </ul>
-                </section>
-
-                <section class='small'>
                     <h3>Problem when applying AEVB to LDA</h3>
                     <ul>
                         <li>
@@ -375,7 +335,7 @@
                     <h3>Dealing with z</h3>
                     <ul>
                         <li>
-                            In LDA, $z$ is discret. This lead to difficulty to define reparameterization function for z.
+                            In LDA, $z$ is <span class='highlight'>discret</span>. This lead to difficulty to define reparameterization function for z.
                         </li>
                         <li>
                             But z can be collapsed as the followings:    
@@ -429,14 +389,14 @@
                         </li>
 
                         <li>
-                            Laplace approximation approximates the Dirichlet prior $p(\theta|\alpha)$ as a multivariate normal with mean $\mu_1$ and covariance matrix $\sum_1$, where
+                            Laplace approximation estimates the Dirichlet prior $p(\theta|\alpha)$ as a multivariate normal with mean $\mu_1$ and covariance matrix $\sum_1$, where
                             <div style='text-align:center; margin-top:0.5em;'>
                                 <image src='images/avitm/laplace_approximation1.png' width=60% style="background-color:#fff; margin-top:0;"/>
                             </div>
-                            , where $\Sigma_1$ is a diagonal covariance matrix
+                            , where $\Sigma_1$ is a <span class='highlight'>diagonal covariance matrix</span>
                         </li>
                         <li>
-                            Approximate to the Dirichlet prior $p(\theta|\alpha)$ is $\hat p(\theta|\mu_1, \sum_1)=\mathcal L \mathcal N(\theta|\mu_1, \sum_1)$, a logistic normal distribution.                            
+                            Approximation of the Dirichlet prior $p(\theta|\alpha)$ is $\hat p(\theta|\mu_1, \sum_1)=\mathcal L \mathcal N(\theta|\mu_1, \sum_1)$, a logistic normal distribution.                            
                         </li>
                     </ul>
                 </section>
@@ -471,10 +431,10 @@
                             , where D is the num of documents
                         </li>
                         <li>
-                            The 1st term is the multivariate normal distribution of the KL Divergence term in (3) ($KL(\mathcal N_0||\mathcal N_1)$)
+                            The 1st term is the <span class='highlight'>multivariate normal distribution of the KL Divergence</span> term in (3) ($KL(\mathcal N_0||\mathcal N_1)$)
                         </li>
                         <li>
-                            The 2nd term is the reconstruction error.
+                            The 2nd term is the <span class='highlight'>reconstruction error</span>.
                         </li>
                     </ul>
                 </section>
@@ -525,13 +485,13 @@
                             AVITM proposed some technique to apply VAE to LDA
                             <ul>
                                 <li>
-                                    * Laplace approximation to the Dirichlet prior
+                                    Laplace approximation to the Dirichlet prior
                                 </li>
                                 <li>
-                                    * Tuning of momentum for training the network
+                                    Tuning of momentum for training the network
                                 </li>
                                 <li>
-                                    * The use of Batch Normalization
+                                    The use of Batch Normalization
                                 </li>
                             </ul>
                         </li>
@@ -540,13 +500,13 @@
                             Advantages of AVITM
                             <ul>
                                 <li>
-                                    * Return consistently better topics than LDA in terms of topic coherent
+                                    Return consistently better topics than LDA in terms of topic coherent
                                 </li>
                                 <li>
-                                    * Fast and efficient like standard mean-field. For inference, AVITM is much faster than mean-field.
+                                    Fast and efficient like standard mean-field. For inference, AVITM is much faster than mean-field.
                                 </li>
                                 <li>
-                                    * Does not require math derivations to handle changes in the model (blackbox) -> can be easily applied to wide range of topic models.
+                                    Does not require math derivations to handle changes in the model (blackbox) -> can be easily applied to wide range of topic models.
                                 </li>
                             </ul>
                         </li>
@@ -560,6 +520,7 @@
                         <script type="text/template">
                             1. AUTOENCODING VARIATIONAL INFERENCE FOR TOPIC MODELS (ICLR'17)
                                 * https://homepages.inf.ed.ac.uk/csutton/publications/avitm.pdf
+                                * Open review: https://openreview.net/forum?id=BybtVK9lg
                             2. Auto-Encoding Variational Bayes (ICLR'14)
                                 * https://arxiv.org/pdf/1312.6114.pdf
                             3. VARIATIONAL INFERENCE: FOUNDATIONS AND INNOVATIONS
