@@ -50,48 +50,47 @@
                     <br/>
                     <small><p>2020/4/3</p></small>
                     <br/>
-                    <small>Dat Nguyen</small>
+                    <small>Presented by Dat Nguyen</small>
                 </section>
 
                 <section class='small'>
-                    <h3>Variational Inference</h3>
+                    <h3>Variational Inference: Recap</h3>
                 </section>
 
                 <section class='small'>
                     <h3>Estimate posterior probability</h3>
                     <section data-markdown class='medium'>
                         <script type="text/template">
-                            * Let x be observation, z be latent variable parameterized by $\theta$
-                            * We interested in calculating the posterior
+                            * Let $x$ be observation, $z$ be latent variable parameterized by $\theta$
+                            * We are interested in calculating the posterior
                             $$p_{\theta}(z|x)=\frac{p_{\theta}(x|z)p_{\theta}(x)}{\int_z p_{\theta}(x, z)}$$
 
                             * In many cases, the denominator cannot be calculated analytically
                             * We come up with Variational Inference (VI): 
 
                             <div class='definition small' style='padding:0.5em 0.2em 0.5em 0.2em; margin-bottom: 0;'>
-                            Find a distribution q which is parameterized by $\phi$,<br/>
-                            such that q is as closed to p as possible
+                            Find a distribution $q$ which is parameterized by $\phi$,<br/>
+                            such that $q$ is as closed to $p$ as possible
                             </div>
                             </div>
                         </script>                        
                     </section>
                 </section>
 
-                <section class='x-small'>
+                <section class='small'>
                     <h3>KL Divergence</h3>
-                    <div>
+                    <div style='margin-top:-1em;'>
                         <ul>
                             <li>
                                 It means, we need to minimize
                                 $$KL(q_{\phi}(z|x)||p_{\theta}(z|x))$$
-                                , where $\phi$ is called variational parameters
+                                <span class='small'>, where $\phi$ is called variational parameters</span>
                             </li>
                         </ul>
                     </div>
-
                     \begin{align}
                     KL(q_{\phi}(z|x)||p_{\theta}(z|x)) & = \int_z q_{\phi}(z|x)\log\frac{q_{\phi}(z|x)}{p_{\theta}(z|x)} \\
-                    & = \int_z q_{\phi}(z|x) [\log q_{\phi}(z|x) + p_{\theta}(x) - p_{\theta}(x,z)] \\
+                    & = \int_z q_{\phi}(z|x) [\log q_{\phi}(z|x) + \log p_{\theta}(x) - \log p_{\theta}(x,z)] \\
                     & = \int_z q_{\phi}(z|x) \log \frac{q_{\phi}(z|x)}{p_{\theta}(x, z)} + \int_z q_{\phi}(z|x) \log p_{\theta}(x) \\
                     & = \int_z q_{\phi}(z|x) \log \frac{q_{\phi}(z|x)}{p_{\theta}(x, z)} + \log p_{\theta}(x)\\
                     \end{align}
@@ -112,7 +111,7 @@
                         </li>
 
                         <li>
-                            $L(\theta,\phi)$ is called <span class='highlight'>Evidence Lower BOund</span> (or <span class='highlight'>ELBO</span>)
+                            $\mathcal L(\theta,\phi; x)$ is called <span class='highlight'>Evidence Lower BOund</span> (or <span class='highlight'>ELBO</span>)
                         </li>
 
                         <li>
@@ -182,7 +181,7 @@
                     <image src='images/avitm/reparametererization_trick.png' width=35% style="background-color:#fff; margin-top:0;"/>
                     <ul>
                         <li>
-                            Define an auxiliary variable $\epsilon \sim p(\epsilon)$ and a differentiable transformation $g_{\phi}$ such that $z=g_{\phi}(\epsilon, x)$, then
+                            Define an <span class='highlight'>auxiliary variable</span> $\epsilon \sim p(\epsilon)$ and a <span class='highlight'>differentiable transformation</span> $g_{\phi}$ such that $z=g_{\phi}(\epsilon, x)$, then
                             $$
                             \mathcal L(\theta,\phi; x) = E_{z \sim q_{\phi}(z|x)}[f(z)] = E_{\epsilon \sim p(\epsilon)}[f(g_{\phi}(\epsilon, x))]
                             $$
@@ -192,6 +191,7 @@
                             $$
                             \nabla_{\phi}\mathcal L(\theta,\phi; x) = \nabla_{\phi}\mathcal E_{\epsilon \sim p(\epsilon)}[f(g_{\phi}(\epsilon, x))] = E_{\epsilon \sim p(\epsilon)}[\nabla_{\phi}\mathcal f(g_{\phi}(\epsilon, x))]
                             $$
+                            <span class='small'>This time, we can <span class='highlight'>move the gradient op into the sum</span> because $\phi$ is independent from $p(\epsilon)$</span>
                         </li>
                     </ul>
                 </section>
@@ -215,7 +215,7 @@
                                     $$
                                 </li>
                                 <li>
-                                    Use neural network to maximize ELBO
+                                    Use neural network to maximize the ELBO
                                     <div style='text-align:center; margin-top:0.5em;'>
                                         <image src='images/avitm/auto_encoder.png' width=35% style="background-color:#fff; margin-top:0;"/>
                                     </div>
@@ -229,6 +229,13 @@
                             </ul>
                         </li>
                     </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>AVITM published on ICLR'17</h3>
+                    <div style='text-align:center; padding:0;'>
+                        <image src='images/avitm/avitm_paper.png' width=55% style="margin-top:0.5em;"/>
+                    </div>
                 </section>
 
                 <section class='small'>
