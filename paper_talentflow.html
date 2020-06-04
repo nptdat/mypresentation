@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title></title>
+
+		<meta name="author" content="Dat Nguyen">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/monokai.css">
+        
+        <link rel="stylesheet" href="css/paper/talent_flow.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+                    <h3>Large-Scale Talent Flow Embedding <br/>for Company Competitive Analysis</h3>
+                    <p>Le Zhang et. al</p>
+                    <p>WWW'20</p>
+                    <br/>
+                    <small><p>2020/6/4</p></small>
+                </section>
+
+                <section class='small'>
+                    <image src='images/talent_flow/title.png' width=60% style="background-color:#fff; margin-top:0;"/>
+                    <br/>
+                    <image src='images/talent_flow/abstract.png' width=40% style="background-color:#fff; margin-top:0;"/>
+                    <br/>
+                    <a href='https://dl.acm.org/doi/abs/10.1145/3366423.3380299'>Paper</a>
+                </section>
+
+                <section class='medium'>
+                    <h3>Key ideas</h3>
+                    <section data-markdown>
+                        <script type="text/template">
+                            * Study <span class='highlight'>competition among companies</span> through analysis of job transitions (talent flow)
+                            * Propose Talent Flow Embeding (TFE) model to learn bi-directional talent attraction of companies via representation of each company
+                            * Propose multi-task strategy to <span class='highlight'>fine-grain company representation</span> by integrating Talent Flow networks from <span class='highlight'>multiple job positions</span>
+                        </script>                        
+                    </section>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Dataset</h3>
+                    <image src='images/talent_flow/resume.png' width=40% style="background-color:#fff; margin-top:0;"/>
+                    <br/>
+                    <section data-markdown class='medium' style='margin-top: 140px;'>
+                        <script type="text/template">
+                            * Collect resumes from LinkedIn API
+                            * Each resume contains a list of job experience records, where each record consists of
+                                * Company name
+                                * Job title (with brief job description)
+                                * Working period
+                            * Talent flow: Job transitions between companies
+                        </script>                        
+                    </section>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Notations</h3>
+                    <image src='images/talent_flow/table1.png' width=70% style="background-color:#fff; margin-top:0;"/>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Talent Flow Network</h3>
+                    <image src='images/talent_flow/definition1.png' width=50% style="background-color:#fff; margin-top:0;"/>
+                    <br/>
+                    <section data-markdown class='medium' style='margin-top: 50px;'>
+                        <script type="text/template">
+                            * When more talents trend to move from company u to v, the competitiveness of v to u increases.
+                                * E.g., 100 employees move from u to v, 20 employees move to w, then v is likely to be more competitive than w with respect to u.
+                            * But, if these 100 employees account for only 10% of the talent source of v, and 20 employees account for 100% of the talent source of w, then w is probably more competitive than v with respect to u.
+                            * To balance the dual situations, consider both the outflow situation of source company u and inflow situation of target company v.
+                        </script>                        
+                    </section>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Competitiveness of a company</h3>
+                    <section data-markdown class='medium' style='margin-top: 50px;'>
+                        <script type="text/template">
+                            * Assume that the more and the shorter career transition paths from company u to v, the more probability that talents move from u to v, and the more probability that the talents of company v mainly come from u.
+                            * This leads to high-order proximity of nodes in graph -> Personalized PageRank
+                            * PPR proximity of u to v reflects the probability that a random walk path starting from u and ending at v.
+                            * PPR proximity of u based on outgoing network G gives the degree that <span class='highlight'>talents from u move to others</span>.
+                            * To capture the degree that <span class='highlight'>talents of u come from the others</span>, we use PPR proximities based on $G^T$, transpose network of G.
+                            * Competitiveness of company v to u is computed as:
+
+                            <div style='text-align: center;'>
+                            <image src='images/talent_flow/formula_1.png' width=50% style="background-color:#fff; margin-top:0;"/>
+                            </div>
+
+                            <div class='small' style='text-align: left;'>
+                            where $\varrho_o(u, v)$ and $\varrho_i(u, v)$ are PPR proximities of u to v in outflow network G and inflow network $G^T$ respectively.
+                            </div>
+                        </script>                        
+                        
+                    </section>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Estimating PPR proximity</h3>
+                    <ul>
+                        <li>
+                            Let $\varrho(u, ・)$ be PPR proximity of u to other nodes
+                        </li>
+                        <li>
+                            Compute the PPR proximity recursively
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula_2.png' width=50% style="background-color:#fff; margin-top:0;"/>
+                            </div>
+                            <ul>
+                                <li>
+                                    A is the transition matrix of the network with normalized rows. 
+                                    <br/>
+                                    $A_{ij}$ indicates the prob to move from node i to j
+                                </li>
+                                <li>
+                                    $\alpha$ is the jump rate
+                                </li>
+                                <li>
+                                    r is a one-hot vector which is all zero except the position of u to be 1.
+                                    <br/>
+                                    (accumulating r vectors for all companies gives personalized teleport matrix in PPR)
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            From the principles of random-walk, $\varrho(u, ・)$ should converge to stationary probs.
+                            <br/>
+                            Thus, a sample from $\varrho(u, ・)$ is the end node in a random walk path that starts from node u.
+                        </li>
+                        
+                    </ul>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Talent Flow Embedding</h3>
+                    <ul>
+                        <li>
+                            For each company u, define 2 attraction vectors
+                            <ul>
+                                <li>
+                                    $S_u$, the source vector of u, which indicates the attraction of talents in company u to other companies.
+                                </li>
+                                <li>
+                                    $T_u$, the target vector of u, which indicates the attraction of company u to the talents from other companies.
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            Talent Flow Embedding is defined as follows:
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/definition2.png' width=60% style="background-color:#fff; margin-top:20px;"/>
+                            </div>
+                        </li>
+
+                        <li>
+                            Because the competitiveness has 2 components, PPR proximities from inflow & outflow networks, so we divide the source & target vectos into 2 parts:
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula3.png' width=60% style="background-color:#fff; margin-top:20px;"/>
+                            </div>
+                            where [・,・] is vector concatenation. 
+                        </li>
+                    </ul>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Talent Flow Embedding (2)</h3>
+                    <image src='images/talent_flow/figure3.png' width=50% style="background-color:#fff; margin-top:0px;"/>
+                    <ul>
+                        <li>
+                            Consider embedding learning on outflow network
+                        </li>
+
+                        <li>
+                            We learn the embedding by fitting a distribution $\varrho_o^*(u, ・)$ to $\varrho_o(u, ・)$,
+                            which lead to minimizing the following KL divergence:
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula4.png' width=40% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+
+                        <li>
+                            Define the distance from u to v as the inner product of the u’s source vector and v’s target vector $S^o_u・T^o_v$, and normalize with softmax
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula5.png' width=40% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+
+                <section class='x-small'>
+                    <h4>Learn TFE with NCE on outflow network</h4>
+                    <ul style='margin-top: -20px;'>
+                        <li>
+                            Minimizing the KL from (4) is equivalent to minimizing the cross-entropy loss
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula6.png' width=40% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+
+                        <li style='margin-top: -20px;'>
+                            It can be minimized with SGD, but it is computationally expensive → adopt <span class='highlight'>Noise Contrastive Estimation (NCE)</span>.
+                        </li>
+
+                        <li>
+                            The idea is to <span class='highlight'>train a binary classifier</span> to distinguish node samples coming from the <span class='highlight'>empirical distribution $\varrho_o(u, ・)$</span> or <span class='highlight'>noise distribution $\varPhi_n$</span>.
+                            <ul>
+                                <li>
+                                    Let D be an indicator, that D=1 for drawing from empirical distribution, and D=0 for drawing from noise distribution
+                                </li>
+                                <li>
+                                    Draw u from <span class='highlight'>default distribution $\varPhi_e$</span>, and draw v from <span class='highlight'>empirical distribution $\varrho_o(u, ・)$</span>
+                                </li>
+
+                                <li>
+                                    Optimizing objective function in (6) becomes maximizing
+                                    <div style='text-align: center;'>
+                                        <image src='images/talent_flow/formula7.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                                    </div>
+                                    where $\theta^o=\{S^o, T^o\}$ are the model parameters, c is the # of noise samples, and
+                                    <div style='text-align: center;'>
+                                        <image src='images/talent_flow/formula8.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li style='margin-top: -20px;'>
+                            In this paper, uniform distribution is used for both $\Phi_e$ and $\Phi_n$
+                        </li>
+
+                        <li>
+                            Similarly, compute the NCE loss on the inflow network $G^T$
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula9.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+
+                        <li>
+                            The final objective function is
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula10.png' width=40% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Multi-task strategy for TFE</h3>
+                    <ul>
+                        <li>
+                            For each company, the talent flow in different job positions could be different → assume that the features of company keep stable in different job position networks
+                        </li>
+
+                        <li>
+                            For each company, to maintain the same attraction vectors $S_u$ and $T_u$ in all job position networks, we need to take the contribution of each dimension in each job position.
+                        </li>
+
+                        <li>
+                            Define role vector $R_k$ for each job position k, of which each dimension $R_{kj}$ is used to represent the importance of the $j^{th}$ feature in job position k.
+                        </li>
+
+                        <li>
+                            Then, the competitiveness of company v to u at the job position k
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula15.png' width=40% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class='small'>
+                    <h3>Multi-task strategy for TFE (2)</h3>
+                    <ul>
+                        <li>
+                            Also consider the inflow and outflow network separately following the idea of TFE, thus define $R^o_k$ & $R^i_k$, so that $R_k = [R^o_k, R^i_k]$
+                        </li>
+
+                        <li>
+                            Need to minimize the sum of cross-entropy loss over multiple networks
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula16.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+
+                        <li>
+                            The NCE loss becomes
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula17.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                            where $\theta=\{S, T, R\}$ are parameters of MTFE model, and
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula18.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+
+                    </ul>
+                </section>
+
+
+                <section class='small'>
+                    <h3>MTFE model learning</h3>
+                    <ul>
+                        <li>
+                            Learn source and target vectors of each company ($S^o_u, T^o_u, S^i_u, T^i_u$) with SGD
+                        </li>
+
+                        <li>
+                            Because $R^o_k$ and $R^i_k$ are bound between 0 and 1, learn them with Projected Gradient
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula19.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                            where $\eta$ is the learning rate and f(x) is
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/formula20.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Data on each job position network</h3>
+                    <image src='images/talent_flow/table2.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Result on link prediction task</h3>
+                    <image src='images/talent_flow/table3.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                </section>
+
+                <section class='small'>
+                    <h3>Result on link weight prediction task</h3>
+                    <image src='images/talent_flow/table4.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                </section>
+
+                <section class='small'>
+                    <h3>Results on competition</h3>
+                    <image src='images/talent_flow/figure8.png' width=40% style="background-color:#fff; margin-top:10px;"/>
+                    <br/>
+                    <image src='images/talent_flow/figure9.png' width=40% style="background-color:#fff; margin-top:10px;"/>
+                </section>
+
+
+			</div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				slideNumber: 'c/t',
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/math/math.js', async: true },
+                    { src: 'plugin/anything/anything.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
