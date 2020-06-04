@@ -362,26 +362,158 @@
 
 
                 <section class='small'>
+                    <h3>MTFE model learning (2)</h3>
+                    <image src='images/talent_flow/algo1.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                </section>
+
+                <section class='small'>
+                    <h1>Experiments</h1>
+                </section>
+
+                
+                <section class='small'>
                     <h3>Data on each job position network</h3>
-                    <image src='images/talent_flow/table2.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                    <ul>
+                        <li>
+                            Data in <span class='highlight'>3 years</span> from January 1st, 2015 to December 31, 2017.
+                        </li>
+
+                        <li>
+                            Use MonkeyLearn to <span class='highlight'>categorize job positions from job description</span> → 26 job positions
+                        </li>
+
+                        <li>
+                            Removed the resumes of employees who have only 1 job record (no job transition)
+                        </li>
+
+                        <li>
+                            Filtered the companies which appeared less than 800 times
+                        </li>
+
+                        <li>
+                            Selected 4 common job positions to analyze the competition: Salesperson, Consultant, Operator and Engineer.
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/table2.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+                    </ul>
                 </section>
 
 
                 <section class='small'>
                     <h3>Result on link prediction task</h3>
-                    <image src='images/talent_flow/table3.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                    <ul>
+                        <li>
+                            The task to <span class='highlight'>judge the existence job transitions</span>span among companies.
+                        </li>
+                        <li>
+                            Randomly moved 50% of edges to test set, keep the remaining in train set
+                        </li>
+
+                        <li>
+                            Expanded the test set by randomly sampling an equal number of node pairs as negative samples, which have no edge connecting them.
+                        </li>
+
+                        <li>
+                            Hyperparams: d = 128, c = 3, $\alpha$=0.85 (same as damping factor d in PageRank)
+                        </li>
+
+                        <li>
+                            Evaluate on 4 datasets with AUC metrics
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/table3.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+                    </ul>
                 </section>
+
 
                 <section class='small'>
                     <h3>Result on link weight prediction task</h3>
-                    <image src='images/talent_flow/table4.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                    <ul>
+                        <li>
+                            The task to <span class='highlight'>predict the degree of talent flows</span>
+                        </li>
+                        <li>
+                            Split job transitions by year, and choose the job transitions between 2015 and 2016 as the training set, and that in 2017 as the test set.
+                        </li>
+
+                        <li>
+                            Trained all models with parameters as same as link prediction.
+                        </li>
+
+                        <li>
+                            Given a node u, <span class='highlight'>rank the others</span> according to the prediction scores.
+                        </li>
+
+                        <li>
+                            Evaluate the performance of the predicted rank list by using the Normalized Discounted Cumulative Gain (NDCG@K, K = 5, 10, 20, 50)
+                            <div style='text-align: center;'>
+                                <image src='images/talent_flow/table4.png' width=50% style="background-color:#fff; margin-top:10px;"/>
+                            </div>
+                        </li>
+                    </ul>
                 </section>
 
                 <section class='small'>
-                    <h3>Results on competition</h3>
-                    <image src='images/talent_flow/figure8.png' width=40% style="background-color:#fff; margin-top:10px;"/>
-                    <br/>
-                    <image src='images/talent_flow/figure9.png' width=40% style="background-color:#fff; margin-top:10px;"/>
+                    <h3>Competitor analysis</h3>
+                    <ul>
+                        <li>
+                            Task to extract biggest competitors of a given company
+                        </li>
+                        <li>
+                            Reveal competitors of Google (company u) as example.
+                        </li>
+
+                        <li>
+                            Compute competitiveness of company v to u (Google in this case) as $(S_u \odot T_v) ・R_k$
+                        </li>
+
+                        <li>
+                            Sort the companies according to the competitiveness scores to get the top-n competitor.
+                        </li>
+                    </ul>
+
+                    <div style='text-align: center;padding:0px 50px 0px 50px;'>
+                        <image src='images/talent_flow/figure8.png' width=40% style="background-color:#fff; margin-top:10px;float:left;"/>
+                        <image src='images/talent_flow/figure9.png' width=50% style="background-color:#fff; margin-top:10px;float:right;"/>
+                    </div>
+                </section>
+
+
+                <section class='small'>
+                    <h3>Clustering on Bi-directional Attraction</h3>
+                    <ul>
+                        <li>
+                            Run the MTFE model on the entire data to get the embedding vectors ofS & T for each company u
+                        </li>
+                        <li>
+                            Use K-means to cluster companies based on their embeddings to 20 clusters
+                        </li>
+
+                        <li>
+                            Project those embedding vectors to 2-D plane
+                        </li>
+
+                        <li>
+                            Found that companies in similar industry are likely to cluster together.
+                            <ul>
+                                <li>
+                                    The high-tech internet companies, such as Google and Baidu, are clustered together.
+                                </li>
+
+                                <li>
+                                    Hotel service companies, such as Sheraton and Hyatt-Regency are clustered together.
+                                </li>
+
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <div style='text-align: center;padding:0px 0px 0px 0px;'>
+                        <image src='images/talent_flow/figure10.png' width=48% style="background-color:#fff; margin-top:10px;float:left;"/>
+                        <image src='images/talent_flow/figure11.png' width=48% style="background-color:#fff; margin-top:10px;float:right;"/>
+                    </div>
                 </section>
 
 
