@@ -19,7 +19,7 @@
 
 		<!-- Theme used for syntax highlighting of code -->
         <link rel="stylesheet" href="lib/css/monokai.css">
-        
+
         <link rel="stylesheet" href="css/paper/AVITM.css">
 
 		<!-- Printing and PDF exports -->
@@ -63,17 +63,17 @@
                         <script type="text/template">
                             * Let $x$ be observation, $z$ be latent variable parameterized by $\theta$
                             * We are interested in calculating the posterior
-                            $$p_{\theta}(z|x)=\frac{p_{\theta}(x|z)p_{\theta}(x)}{\int_z p_{\theta}(x, z)}$$
+                            $$p_{\theta}(z|x)=\frac{p_{\theta}(x|z)p_{\theta}(z)}{\int_z p_{\theta}(x, z)}$$
 
                             * In many cases, the denominator cannot be calculated analytically
-                            * We come up with Variational Inference (VI): 
+                            * We come up with Variational Inference (VI):
 
                             <div class='definition small' style='padding:0.5em 0.2em 0.5em 0.2em; margin-bottom: 0;'>
                             Find a distribution $q$ which is parameterized by $\phi$,<br/>
                             such that $q$ is as closed to $p$ as possible
                             </div>
                             </div>
-                        </script>                        
+                        </script>
                     </section>
                 </section>
 
@@ -96,7 +96,7 @@
                     \end{align}
                 </section>
 
-                
+
                 <section class='small'>
                     <h3>Evidence Lower Bound</h3>
 
@@ -166,7 +166,7 @@
 
                     <ul>
                         <li>
-                            The gradient $\nabla_{\phi} E_{z \sim q_{\phi}(z|x)}[f(z)]$ is more <span class='highlight'>difficult</span> because $\phi$ appears in the distribution wrt which the expectation is taken, we cannot push the gradient op into the sum. 
+                            The gradient $\nabla_{\phi} E_{z \sim q_{\phi}(z|x)}[f(z)]$ is more <span class='highlight'>difficult</span> because $\phi$ appears in the distribution wrt which the expectation is taken, we cannot push the gradient op into the sum.
                             <br/>
                             ($f(z) = \log p_{\theta}(x, z) - \log q_{\phi}(z|x)$)
                         </li>
@@ -345,7 +345,7 @@
                             In LDA, $z$ is <span class='highlight'>discret</span>. This lead to difficulty to define reparameterization function for z.
                         </li>
                         <li>
-                            But z can be collapsed as the followings:    
+                            But z can be collapsed as the followings:
                             <ul>
                                 <li>
                                     According to the LDA generative model
@@ -403,7 +403,7 @@
                             , where $\Sigma_1$ is a <span class='highlight'>diagonal covariance matrix</span>
                         </li>
                         <li>
-                            Approximation of the Dirichlet prior $p(\theta|\alpha)$ is $\hat p(\theta|\mu_1, \sum_1)=\mathcal L \mathcal N(\theta|\mu_1, \sum_1)$, a logistic normal distribution.                            
+                            Approximation of the Dirichlet prior $p(\theta|\alpha)$ is $\hat p(\theta|\mu_1, \sum_1)=\mathcal L \mathcal N(\theta|\mu_1, \sum_1)$, a logistic normal distribution.
                         </li>
                     </ul>
                 </section>
@@ -534,7 +534,7 @@
                                 * http://www.cs.columbia.edu/~blei/talks/Blei_VI_tutorial.pdf
                             4. Automatic autoencoding variational Bayes for latent dirichlet allocation with PyMC3 (tutorial)
                                 * https://docs.pymc.io/notebooks/lda-advi-aevb.html
-                        </script>                        
+                        </script>
                     </section>
                 </section>
 			</div>
