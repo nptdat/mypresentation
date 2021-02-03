@@ -137,7 +137,7 @@
                         <script type="text/template">
                             - Recap: $p(t)$ is the probability distribution at the time t of a random walk.
                             - Define a <span class='highlight'>long-term average probability distribution a(t)</span> as the following
-                            $$a(t)=\frac{1}{t}(p(0)+p(1)+...+p(t-1))$$
+                            $$a(t)=\frac{1}{t}[p(0)+p(1)+...+p(t-1)]$$
                             - The fundamental theorem of Markov chain asserts that for a connected Markov chain, a(t) converges to a probability vector x that satisfies $\mathrm xP=\mathrm x$
                         </script>
                     </section>
@@ -216,11 +216,36 @@
                 </section>
 
                 <section class='medium'>
-                    <h3>Some background on MCMC</h3>
+                    <h3>Notations</h3>
                     <section data-markdown class='small' style='margin-top: 80px;'>
                         <script type="text/template">
-                            - point1
-                            - point2
+                            - Although $x \in \mathbb R^d$ is multivariate random variable, each value of x corresponds to a state in Markov chain
+                            - Use i, j, k... to denote states, and probability of state i is $p_i$.
+                            - The row vector p(t), where the $i^{th}$ component indicates probabilities of being in state i at the time t
+                            - Long-term t-step average is
+                            $$a(t)=\frac{1}{t}[p(0)+p(1)+...+p(t-1)]$$
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>Rate of convergence</h3>
+                    <section data-markdown class='small' style='margin-top: 20px;'>
+                        <script type="text/template">
+                            - Expected value of function f under probability distribution p is $E(f)=\sum_i f_i p_i$
+                            - The estimate of expected value is average value of f at the states seen in t step walks. Call it $\gamma$.
+                            - Then the estimate of $\gamma$ is
+                            $$E(\gamma)=\sum_i f_i \Bigl(\frac{1}{t}\sum_{j=1}^t\text{Prob}\bigl(\text{walk is in state i at time j}\bigr)\Bigr)=\sum_i f_i a_i(t)$$
+                            - Let $f_{max}$ be the maximum absolute value of $f$. So
+                            $$
+                            \begin{align}
+                            \Bigl| \sum_i f_i p_i - E(\gamma) \Bigr| & = \Bigl| \sum_i f_i p_i - \sum_i f_i a_i(t) \Bigr| \\\\
+                            & = f_i \sum_i \Bigl| p_i - a_i(t) \Bigr| \\\\
+                            & \le f_{max} \sum_i \Bigl| p_i - a_i(t)\Bigr|=f_{max} \lVert p-a(t) \rVert_1
+                            \end{align}
+                            $$
+                            - $\lVert p-a(t) \rVert_1$ is the $l_1$ distance between the probs $p$ and $a(t)$, is often called <span class='highlight'>total variation distance</span>
+                            - Since $p$ is the stationary distribution, the t for which $\lVert p-a(t) \rVert_1$ becomes small is determined by the <span class='highlight'>rate of convergence</span> of the Markov chain.
                         </script>
                     </section>
                 </section>
@@ -269,11 +294,11 @@
                         <script type="text/template">
                             - Following the above procedure, we have
                                 - For i adjacent to j in G
-                                    $$p_{ij}=\frac{1}{r}min(1, \frac{p_j}{p_i})$$
+                                    $$p_{ij}=\frac{1}{r}\text{min}(1, \frac{p_j}{p_i})$$
                                 - The probability to stay at i is
                                     $$p_{ii}=1-\sum_{j \neq i}p_{ij}$$
                             - Therefore,
-                                - $p_ip_{ij}=\frac{p_i}{r}min(1, \frac{p_j}{p_i})=\frac{1}{r}min(p_i, p_j)=\frac{p_j}{r}min(1, \frac{p_i}{p_j})=p_jp_{ji}$
+                                - $p_ip_{ij}=\frac{p_i}{r}\text{min}(1, \frac{p_j}{p_i})=\frac{1}{r}\text{min}(p_i, p_j)=\frac{p_j}{r}\text{min}(1, \frac{p_i}{p_j})=p_jp_{ji}$
                             - According to the Lemma 4.3, p is the stationary probability of the designed Markov Chain
                         </script>
                     </section>
@@ -281,9 +306,55 @@
 
                 <section class='medium'>
                     </h2>Metropolis-Hasting algorithm - Example</h2>
-                    <image src='images/fods_chap4_randwalk/figure4.2.png' width=70% style='margin-top: 0px;'/>
+                    <image src='images/fods_chap4_randwalk/figure4.2.png' width=60% style='margin-top: 0px;'/>
+                    <image src='images/fods_chap4_randwalk/metropolis_example.png' width=60% style='margin-top: 0px;'/>
+
                     <section data-markdown class='small' style='margin-top: 0px;'>
                         <script type="text/template">
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h4>Metropolis-Hasting algorithm - Implementation for continuous distribution</h4>
+                    <section data-markdown class='small' style='margin-top: 50px;'>
+                        <script type="text/template">
+                            - For continuous variables, the maximum degree, $r$, of vertex of G will go to infinite.
+                            - We use a proposal distribution $q$ to select neighbor state when being in state i.
+                            - That mean, given state i, a neighbor state j will be selected with a probability q(j|i)
+                            - Decision of going to j or not remains the same
+                            - So, for i adjacent to j in G, the probability of going from i to j will be
+                                $$p_{ij}=q(j|i) \text{ min}(1, \frac{p_j}{p_i})$$
+                            - The probability to stay at i is
+                                $$p_{ii}=1-\sum_{j \neq i}p_{ij}$$
+                            - Similar to the previous proof
+                                - $p_ip_{ij}=q(j|i) p_i \text{ min} (1, \frac{p_j}{p_i})=q(j|i) \text{ min}(p_i, p_j)=q(j|i) p_j \text{ min}(1, \frac{p_i}{p_j})$
+                            - To ensure the detailed balance equation, $p_ip_{ij}=p_jp_{ji}$, i.e., $q(j|i) = q(i|j)$
+                            - In other words, the proposal distribution q must be <span class='highlight'>symmetric</span>.
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h4>Metropolis-Hasting algorithm summary</h4>
+                    <section data-markdown class='small' style='margin-top: 50px;'>
+                        <script type="text/template">
+                            - Input:
+                                - Given target probability distribution $p$
+                                - Number of samples N
+                            - Output: N samples drawn from $p$
+                            - Algorithm:
+                                - Randomly initialize a sample x
+                                - Initialize sample set $S={\emptyset}$
+                                - Choose a symmetric distribution q as proposal distribution
+                                - For i in 1:N
+                                    - Sample $x_{new}$ from $x$ with probability $q(x_{new}|x)$
+                                    - Draw a value u $\sim$ Uniform(0, 1)
+                                    - If $u < min(1, \frac{p(x_{new})}{p(x)})$, then
+                                        $x \leftarrow x_{new}$
+                                    - $S \leftarrow x$
+
+                                - Return S
                         </script>
                     </section>
                 </section>
