@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title></title>
+
+		<meta name="author" content="Dat Nguyen">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/monokai.css">
+
+        <link rel="stylesheet" href="css/paper/fods_chap4_randwalk.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+                    <h4>Foundation of Data Science </h4>
+                    <h2>Chapter4 - Random Walk</h2>
+                    <br/>
+                    <small><p>2021/2/3</p></small>
+                </section>
+
+                <section class='small'>
+                    <h3>Random walk</h3>
+                    <image src='images/fods_chap4_randwalk/directed_graph.png' width=20% style="background-color:#fff; margin-top:0;"/>
+                    <br/>
+                    <section data-markdown class='medium' style='margin-top: 80px;'>
+                        <script type="text/template">
+                            - A random walk on a <span class='highlight'>directed graph</span> consists of a <span class='highlight'>sequence of vertices</span> generated from a
+                            start vertex by <span class='highlight'>randomly selecting an incident edge</span>, traversing the edge to a new vertex,
+                            and repeating the process.
+                            - The graph is <span class='highlight'>strongly connected</span> if for any pair of
+                            vertices x and y, the graph contains a path of directed edges starting at x and ending at
+                            y.
+                            - If the graph is strongly connected, no matter where the walk start, after a fraction of time the probability of being at a vertex converges to a <span class='highlight'>stationary probability distribution</span>.
+                        </script>
+
+                    </section>
+
+                </section>
+
+                <section class='medium'>
+                    <h3>Transition matrix</h3>
+                    <image src='images/fods_chap4_randwalk/directed_graph.png' height=150px style="background-color:#fff; margin-top:0;"/>
+                    <image src='images/fods_chap4_randwalk/transition_matrix.png' height=150px style="background-color:#fff; margin-top:0;margin-left: 20px"/>
+                    <section data-markdown class='small' style='margin-top: 80px;'>
+                        <script type="text/template">
+                            - <span class='highlight'>Transition matrix $P$</span>, where $P_{xy}$ represents the probability of moving from x to y.
+                            - Start at a vertex x means the probability of staying at x is 1 and staying of the other vertices are 0.
+                            - $p(t)$, a row vector specifying the probability of being at each vectex at the time t.
+                            - Then, the <span class='highlight'>row vector</span> of probabilities at the time (t+1) will be
+                            $$p(t)P=p(t+1)$$
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h3>Markov chain</h3>
+                    <section data-markdown class='small' style='margin-top: 0px;'>
+                        <script type="text/template">
+                            - Equivalent concept of random walk in statistical literature: Markov chain
+                                - Finite set of states
+                                - Going from state x to state y with probability $p_{xy}$, where $\sum_y p_{xy}=1$
+                            - Random walk in the Markov chain
+                                - Start at some state
+                                - At a given time, if it is in state x, then choose state y with probability $p_{xy}$ to go next
+                            - A Markov chain can be represented by a directed graph
+                                - State as vertex
+                                - Directed edge connecting x and y with weight $p_{xy}$ indicates the prob to move from state x to state y
+                            - A Markov chain is <span class='highlight'>connected</span> if the corresponding graph is strongly connected.
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h3>Aperiodicity and Persistence</h3>
+                    <section data-markdown class='small' style='margin-top: 20px;'>
+                        <script type="text/template">
+                            - <span class='highlight'>Aperiodic</span> Markov Chain:
+                                - Greatest Common Divisor (GCD) of the lengths of directed cycles is 1.
+                                <br/>
+                                <image src='images/fods_chap4_randwalk/aperiodic_graph.svg' height=120px/>
+                            - <span class='highlight'>Persistent</span> Markov Chain:
+                                - Probability of any state to be reached is 1.
+                                - Equivalent to strongly connected directed graph
+                            <br/>
+                            <br/>
+                            <image src='images/fods_chap4_randwalk/table4.1.png' height=200px  style='margin-top: 0px;'/>
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h3>Applications of Markov chain</h3>
+                    <section data-markdown class='small' style='margin-top: 0px;'>
+                        <script type="text/template">
+                            - Speech recognition
+                                - Given the current state, there is a certain probability of each syllable being
+                                uttered next and these can be used to calculate the transition probabilities.
+                            - Sampling: stay tuned!
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h3>4.1 Stationary Distribution</h3>
+                    <section data-markdown class='small' style='margin-top: -50px;'>
+                        <script type="text/template">
+                            - Recap: $p(t)$ is the probability distribution at the time t of a random walk.
+                            - Define a <span class='highlight'>long-term average probability distribution a(t)</span> as the following
+                            $$a(t)=\frac{1}{t}(p(0)+p(1)+...+p(t-1))$$
+                            - The fundamental theorem of Markov chain asserts that for a connected Markov chain, a(t) converges to a probability vector x that satisfies $\mathrm xP=\mathrm x$
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h3>Lemma 4.1</h3>
+                    <image src='images/fods_chap4_randwalk/lemma4.1.png' style='margin-top: 0px;'/>
+                    <section data-markdown class='small' style='margin-top: -120px;'>
+                        <script type="text/template">
+                            - Proof in the pp80 of FoDS book
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>Fundamental Theorem of Markov Chains</h3>
+                    <image src='images/fods_chap4_randwalk/theorem4.2.png' width=80% style='margin-top: 0px;'/>
+                    <section data-markdown class='small' style='margin-top: -150px;'>
+                        <script type="text/template">
+                            - Proof in the pp80 ~ 81 of FoDS book
+                        </script>
+                    </section>
+
+
+                </section>
+
+                <section class='medium'>
+                    <h3>Lemma 4.3</h3>
+                    <image src='images/fods_chap4_randwalk/lemma4.3.png' width=80% style='margin-top: 0px;'/>
+                    <section data-markdown class='small' style='margin-top: 80px;'>
+                        <script type="text/template">
+                            - Proof
+                                - Note that $\pi$ is row vector
+                                - Since $\pi_xp_{xy} = \pi_yp_{yx}$ for $\forall x$ and $\forall y$, sum both sides by y, then
+                                    - $\sum_y \pi_xp_{xy} = \sum_y \pi_yp_{yx} $ => $\pi_x = \sum_y \pi_yp_{yx} $ for $\forall x$ and $\forall y$
+                                - It means that $\pi = \pi P$
+                                - By theorem 4.2, $\pi$ is the unique stationary probability.
+
+                            - The equation $\pi_xp_{xy} = \pi_yp_{yx}$ for $\forall x$ and $\forall y$ in Lemma 4.3 is also called <span class='highlight'>detailed balance equation</span>.
+                            - If a Markov chain satisfy detailed balance equation w.r.t $\pi$, then the chain is said to be <span class='highlight'>reversible</span> w.r.t $\pi$
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>Monte Carlo method</h3>
+                    <image src='images/fods_chap4_randwalk/monte_carlo.gif' width=20% style='margin-top: 0px;'/>
+                    <section data-markdown class='small' style='margin-top: 100px;'>
+                        <script type="text/template">
+                            - <span class='highlight'>Monte Carlo methods</span>, or <span class='highlight'>Monte Carlo experiments</span>, are a broad class of computational algorithms that rely on <span class='highlight'>repeated random sampling</span> to obtain numerical results (Wikipedia).
+                            - **Estimate $\pi$**
+                                1. Draw unit square and a quandrant of the circle with radius of 1
+                                2. Uniformly random 2D points inside the square
+                                3. Count the point inside the quandrant, i.e. those with distance to the origin is $\le 1$
+                                4. Ratio of the count from 3 and the total points is estimate of $\frac{\pi}{4}$. Multiply this ratio by 4 to estimate $\pi$
+                            - The more points we random, the more accurate the estimate is
+                            - The method was named after Monte Carlo casino in Monaco.
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h3>Markov Chain Monte Carlo (MCMC)</h3>
+                    <section data-markdown class='small' style='margin-top: 80px;'>
+                        <script type="text/template">
+                            - Assume that we have to compute the expected value of a function $f(x)$, where $x = (x_1, x_2,..., x_d)$
+                            - If $x_i$ has two or more values, there are at least $2^d$ values of x, then the computation of $E(f)$ requires exponential time.
+                            - MCMC is a technique to help us sample x values from its probability distribution p(x), then estimate the expected value of $f(x)$ by averaging f over the samples
+                                $$E(f)=\sum_x f(x)p(x)$$
+                            - To sample according to p(x)
+                                - Design a Markov Chain whose <span class='highlight'>states correspond to the possible values of x</span>, and whose <span class='highlight'>stationary probability distribution</span> is p(x).
+                                - Randomly walk on the chain, and collect the visited states as samples
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h3>Some background on MCMC</h3>
+                    <section data-markdown class='small' style='margin-top: 80px;'>
+                        <script type="text/template">
+                            - point1
+                            - point2
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>Proposition 4.4</h3>
+                    <image src='images/fods_chap4_randwalk/proposition4.4.png' width=60% style='margin-top: 0px;'/>
+                    <section data-markdown class='medium' style='margin-top: 100px;'>
+                        <script type="text/template">
+                            - **Proof**
+                                - Define $S = \\{i|p_i - q_i \ge 0\\}$
+                                - Define $\bar S=\\{i|p_i - q_i \lt 0\\}=\\{i|q_i - p_i \ge 0\\}$
+                                - Note that
+                                    - $\sum_{i \in \bar S} \lvert p_i - q_i \rvert^+ = 0$
+                                    - $\sum_{i \in S} \lvert q_i - p_i \rvert^+ = 0$
+                                - $\lVert p-q\rVert_1 = \sum_i \lvert p_i - q_i \rvert = \sum_{i \in S} (p_i - q_i)^+ + \sum_{i \in \bar S} (q_i - p_i)^+$　　　　　　　　　　　　　(1)
+                                - $\sum_{i \in S} \lvert p_i - q_i \rvert^+ = \sum_{i \in S}p_i - \sum_{i \in S}q_i = 1 - \sum_{i \in \bar S}p_i - 1 + \sum_{i \in \bar S}q_i = \sum_{i \in \bar S}(q_i-p_i)^+$　　(2)
+                                - Replace (2) into (1)
+                                    - $\lVert p-q\rVert_1 = 2 \sum_{i \in S} (p_i - q_i)^+ = 2 \sum_{i \in S} (p_i - q_i)^+ + 2 \sum_{i \in \bar S} (p_i - q_i)^+ = 2 \sum_{i} (p_i - q_i)^+$
+                                    - $\lVert p-q\rVert_1 = 2 \sum_{i \in \bar S} (q_i - p_i)^+ = 2 \sum_{i \in \bar S} (q_i - p_i)^+ + 2 \sum_{i \in S} (q_i - p_i)^+ = 2 \sum_{i} (q_i - p_i)^+$
+                            - Proposition 4.4 will be used in <span class='highlight'>Convergence of Random Walks on Undirected Graphs</span> section
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h4>4.2.1 Metropolis-Hasting algorithm (1)</h4>
+                    <section data-markdown class='small' style='margin-top: 0px;'>
+                        <script type="text/template">
+                            - General method to design a Markov Chain whose stationary distribution is a given target probability $p$
+                            - Design a connected undirected graph G as below
+                                - Let r be the maximum degree of any vertex.
+                                - At state i, select neighbor j with probability $\frac{1}{r}$
+                                - So, there is a probability remaining at i (because the sum probability going to k neighbors is $\frac{k}{r}<1$)
+                                - If j is selected and $p_j \ge p_i$, go to j.
+                                - If $p_j \lt p_i$
+                                    - Go to j with probability $\frac{p_j}{p_i}$
+                                    - Stay at i with probability $1-\frac{p_j}{p_i}$
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    <h3>Metropolis-Hasting algorithm (2)</h3>
+                    <section data-markdown class='small' style='margin-top: 0px;'>
+                        <script type="text/template">
+                            - Following the above procedure, we have
+                                - For i adjacent to j in G
+                                    $$p_{ij}=\frac{1}{r}min(1, \frac{p_j}{p_i})$$
+                                - The probability to stay at i is
+                                    $$p_{ii}=1-\sum_{j \neq i}p_{ij}$$
+                            - Therefore,
+                                - $p_ip_{ij}=\frac{p_i}{r}min(1, \frac{p_j}{p_i})=\frac{1}{r}min(p_i, p_j)=\frac{p_j}{r}min(1, \frac{p_i}{p_j})=p_jp_{ji}$
+                            - According to the Lemma 4.3, p is the stationary probability of the designed Markov Chain
+                        </script>
+                    </section>
+                </section>
+
+                <section class='medium'>
+                    </h2>Metropolis-Hasting algorithm - Example</h2>
+                    <image src='images/fods_chap4_randwalk/figure4.2.png' width=70% style='margin-top: 0px;'/>
+                    <section data-markdown class='small' style='margin-top: 0px;'>
+                        <script type="text/template">
+                        </script>
+                    </section>
+                </section>
+
+                <section class='small'>
+                    <h3>4.2.2 Gibbs Sampling (1)</h3>
+                    <section data-markdown class='small' style='margin-top: -100px;'>
+                        <script type="text/template">
+                            - Another MCMC method to sample from multivariate probability distribution
+                            - $\mathrm x=(x_1, x_2, ..., x_d)$, target distribution p(x)
+                            - Random walk on an undirected graph whose vertices correspond to the values of $\mathrm x$
+                            - An edge connect x and y if x and y differ in only on coordinate
+                            - Staying at $\mathrm x=(x_1, x_2, ..., x_d)$ at a time, to generate new sample Gibbs sampling choose one of the variable $x_i$ to update
+                            - 2 strategies to choose $x_i$
+                                - Choose $x_i$ randomly
+                                - Choose $x_i$ sequentially from $x_1$ to $x_d$
+                        </script>
+                    </section>
+                    <image src='images/fods_chap4_randwalk/gibbs_sampling_graph.png' width=20% style='margin-top: 400px;'/>
+                </section>
+
+                <section class='x-small'>
+                    <h3>Gibbs Sampling (2)</h3>
+                    <section data-markdown class='small' style='margin-top: 30px;'>
+                        <script type="text/template">
+                            - Consider 2 states x and y that differ in only one coord. Assume the coord to be $x_1$.
+                            - Probability $p_{xy}$ of going from x to y is
+                            $$p_{xy}=\frac{1}{d}p(y_1|x_2, x_3, ..., x_d)$$
+                            - Similarly,
+                            $$
+                            p_{yx} =\frac{1}{d}p(x_1|y_2, y_3, ..., y_d) = \frac{1}{d}p(x_1|x_2, x_3, ..., x_d)
+                            $$
+                            because for $j \neq 1, x_j=y_j$
+
+                            - Rewrite $p_{xy}$
+                            $$
+                            \begin{align}
+                            p_{xy} & =\frac{1}{d}\frac{p(y_1|x_2, x_3, ..., x_d)p(x_2, x_3, ..., x_d)}{p(x_2, x_3, ..., x_d)} \\\\
+                                & =\frac{1}{d}\frac{p(y_1,x_2, x_3, ..., x_d)}{p(x_2, x_3, ..., x_d)} \\\\
+                                & =\frac{1}{d}\frac{p(y)}{p(x_2, x_3, ..., x_d)}
+                            \end{align}
+                            $$
+
+                            - Again using $x_j=y_j$ for $j \neq 1$, similarly
+                            $$p_{yx} =\frac{1}{d}\frac{p(x)}{p(x_2, x_3, ..., x_d)}$$
+
+                            - Thus, $p(x)p_{xy}=p(y)p_{yx}$.
+                            - By Lemma 4.3, the stationary probability of the random walk is p(x)
+
+
+
+                        </script>
+                    </section>
+                </section>
+
+                <section class='x-small'>
+                    <h3>Gibbs Sampling-Example</h3>
+                    <image src='images/fods_chap4_randwalk/figure4.3.png' width=62% style='margin-top: 0px;'/>
+                </section>
+
+
+			</div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+				slideNumber: 'c/t',
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/math/math.js', async: true },
+                    { src: 'plugin/anything/anything.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
