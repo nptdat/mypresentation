@@ -205,9 +205,10 @@
                     <section data-markdown class='small' style='margin-top: 80px;'>
                         <script type="text/template">
                             - Assume that we have to compute the expected value of a function $f(x)$, where $x = (x_1, x_2,..., x_d)$
+                                $$E(f)=\sum_x f(x)p(x)$$
                             - If $x_i$ has two or more values, there are at least $2^d$ values of x, then the computation of $E(f)$ requires exponential time.
                             - MCMC is a technique to help us sample x values from its probability distribution p(x), then estimate the expected value of $f(x)$ by averaging f over the samples
-                                $$E(f)=\sum_x f(x)p(x)$$
+                                $$E(f) \approx \frac{1}{N}\sum_{x \sim P} f(x)$$
                             - To sample according to p(x)
                                 - Design a Markov Chain whose <span class='highlight'>states correspond to the possible values of x</span>, and whose <span class='highlight'>stationary probability distribution</span> is p(x).
                                 - Randomly walk on the chain, and collect the visited states as samples
@@ -233,9 +234,10 @@
                     <section data-markdown class='small' style='margin-top: 20px;'>
                         <script type="text/template">
                             - Expected value of function f under probability distribution p is $E(f)=\sum_i f_i p_i$
-                            - The estimate of expected value is average value of f at the states seen in t step walks. Call it $\gamma$.
+                                - $f_i$ is the value of f at state i
+                            - The estimate of expected value is <span class='highlight'>average value of f at the states seen in t step walks</span>. Call it $\gamma$.
                             - Then the estimate of $\gamma$ is
-                            $$E(\gamma)=\sum_i f_i \Bigl(\frac{1}{t}\sum_{j=1}^t\text{Prob}\bigl(\text{walk is in state i at time j}\bigr)\Bigr)=\sum_i f_i a_i(t)$$
+                            $$E(\gamma)=\sum_i f_i * \Bigl(\frac{1}{t}\sum_{j=1}^t\text{Prob}\bigl(\text{walk is in state i at time j}\bigr)\Bigr)=\sum_i f_i a_i(t)$$
                             - Let $f_{max}$ be the maximum absolute value of $f$. So
                             $$
                             \begin{align}
@@ -257,7 +259,7 @@
                         <script type="text/template">
                             - **Proof**
                                 - Define $S = \\{i|p_i - q_i \ge 0\\}$
-                                - Define $\bar S=\\{i|p_i - q_i \lt 0\\}=\\{i|q_i - p_i \ge 0\\}$
+                                - Define $\bar S=\\{i|p_i - q_i \lt 0\\} \Rightarrow \bar S=\\{i|q_i - p_i \ge 0\\}$
                                 - Note that
                                     - $\sum_{i \in \bar S} \lvert p_i - q_i \rvert^+ = 0$
                                     - $\sum_{i \in S} \lvert q_i - p_i \rvert^+ = 0$
@@ -284,8 +286,11 @@
                                 - If $p_j \lt p_i$
                                     - Go to j with probability $\frac{p_j}{p_i}$
                                     - Stay at i with probability $1-\frac{p_j}{p_i}$
+
+                                <image src='images/fods_chap4_randwalk/metropolis_transition.png' width=15% style='margin-left:350px;margin-top: 0px;'/>
                         </script>
                     </section>
+
                 </section>
 
                 <section class='medium'>
@@ -307,7 +312,7 @@
                 <section class='medium'>
                     </h2>Metropolis-Hasting algorithm - Example</h2>
                     <image src='images/fods_chap4_randwalk/figure4.2.png' width=60% style='margin-top: 0px;'/>
-                    <image src='images/fods_chap4_randwalk/metropolis_example.png' width=60% style='margin-top: 0px;'/>
+                    <image src='images/fods_chap4_randwalk/metropolis_example.png' width=50% style='margin-top: -10px;'/>
 
                     <section data-markdown class='small' style='margin-top: 0px;'>
                         <script type="text/template">
@@ -320,7 +325,7 @@
                     <section data-markdown class='small' style='margin-top: 50px;'>
                         <script type="text/template">
                             - For continuous variables, the maximum degree, $r$, of vertex of G will go to infinite.
-                            - We use a proposal distribution $q$ to select neighbor state when being in state i.
+                            - We use a <span class='highlight'>proposal distribution $q$</span> to select neighbor state when being in state i.
                             - That mean, given state i, a neighbor state j will be selected with a probability q(j|i)
                             - Decision of going to j or not remains the same
                             - So, for i adjacent to j in G, the probability of going from i to j will be
@@ -328,21 +333,22 @@
                             - The probability to stay at i is
                                 $$p_{ii}=1-\sum_{j \neq i}p_{ij}$$
                             - Similar to the previous proof
-                                - $p_ip_{ij}=q(j|i) p_i \text{ min} (1, \frac{p_j}{p_i})=q(j|i) \text{ min}(p_i, p_j)=q(j|i) p_j \text{ min}(1, \frac{p_i}{p_j})$
+                                - $p_ip_{ij}=q(j|i) p_i \text{ min} (1, \frac{p_j}{p_i})=q(j|i) \text{ min}(p_i, p_j)=q(j|i) p_j \text{ min}(1, \frac{p_i}{p_j})=p_j q(j|i) \text{ min}(1, \frac{p_i}{p_j})$
                             - To ensure the detailed balance equation, $p_ip_{ij}=p_jp_{ji}$, i.e., $q(j|i) = q(i|j)$
                             - In other words, the proposal distribution q must be <span class='highlight'>symmetric</span>.
                         </script>
                     </section>
                 </section>
 
-                <section class='medium'>
+                <section class='mediumpanel'>
                     <h4>Metropolis-Hasting algorithm summary</h4>
-                    <section data-markdown class='small' style='margin-top: 50px;'>
+                    <section data-markdown class='small' style='margin-top: 20px;'>
                         <script type="text/template">
                             - Input:
-                                - Given target probability distribution $p$
+                                - Target probability distribution $p$
                                 - Number of samples N
-                            - Output: N samples drawn from $p$
+                            - Output:
+                                - N samples drawn from $p$
                             - Algorithm:
                                 - Randomly initialize a sample x
                                 - Initialize sample set $S={\emptyset}$
@@ -376,13 +382,14 @@
                     <image src='images/fods_chap4_randwalk/gibbs_sampling_graph.png' width=20% style='margin-top: 400px;'/>
                 </section>
 
-                <section class='x-small'>
+                <section class='xx-small'>
                     <h3>Gibbs Sampling (2)</h3>
                     <section data-markdown class='small' style='margin-top: 30px;'>
                         <script type="text/template">
                             - Consider 2 states x and y that differ in only one coord. Assume the coord to be $x_1$.
                             - Probability $p_{xy}$ of going from x to y is
                             $$p_{xy}=\frac{1}{d}p(y_1|x_2, x_3, ..., x_d)$$
+                            - d is normalizing constant $d=\sum_{i=1}^{d} \sum_{y_i} p(y_i|x_1, x_2, ..., x_{i-1}, x_{i+1}, ..., x_d)$
                             - Similarly,
                             $$
                             p_{yx} =\frac{1}{d}p(x_1|y_2, y_3, ..., y_d) = \frac{1}{d}p(x_1|x_2, x_3, ..., x_d)
