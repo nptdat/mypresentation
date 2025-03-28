@@ -1,6 +1,6 @@
 - Presentations are public [here](https://nptdat.github.io/mypresentation)
 
-# My presentation based on reveal.js
+# My presentations
 1. [CTC Loss](ctc_loss.html)
 2. [Cluster GCN](paper_cluster_gcn.html)
 3. [AutoEncoding Variational Inference for Topic Models](AVITM.html)
