@@ -5,6 +5,8 @@
 2. [Cluster GCN](paper_cluster_gcn.html)
 3. [AutoEncoding Variational Inference for Topic Models](AVITM.html)
 4. [Large-Scale Talent Flow Embedding for Company Competitive Analysis (WWW'20)](paper_talentflow.html)
+5. [Mask-RCNN for Instance Segmentation](https://speakerdeck.com/nptdat/mask-rcnn-for-instance-segmentation)
+6. [An Introduction to Semantic Search](https://speakerdeck.com/nptdat/an-introduction-to-semantic-search)
 
 # Steps to publish presentations
 - Create a public repo
