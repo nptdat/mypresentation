@@ -1862,13 +1862,13 @@
         <section class="slide slide--title-sidebar active valign-middle" data-index="0">
             <h1>Reasoning Models in Practice: From Inference-Time to Training-Time Scaling on Verifiable Tasks</h1>
             <div class="slide-content">
-                <div class="colloquium-title-eyebrow">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-title-eyebrow">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-title-meta">
                     <p class="colloquium-title-name">Dat Nguyen</p>
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">1/93</span>
                 </div>
@@ -1881,20 +1881,20 @@
                     <div class="colloquium-box-title">Agenda</div>
                     <div class="colloquium-box-content">
                         <ol>
-                            <li><strong>Reasoning tasks &amp; evaluation</strong> — what makes a task
+                            <li><strong>Reasoning tasks &amp; evaluation</strong>: what makes a task
                                 &quot;verifiable&quot;</li>
-                            <li><strong>Language model &amp; text generation</strong> — Classifcal LM to autoregressive
+                            <li><strong>Language model &amp; text generation</strong>: Classifcal LM to autoregressive
                                 generation, base vs chat</li>
-                            <li><strong>Inference-time scaling</strong> — CoT, self-consistency, self-refinement</li>
-                            <li><strong>Training-time scaling</strong> — Pre-training → SFT → RLHF → PPO → GRPO → RLVR
+                            <li><strong>Inference-time scaling</strong>: CoT, self-consistency, self-refinement</li>
+                            <li><strong>Training-time scaling</strong>: Pre-training → SFT → RLHF → PPO → GRPO → RLVR
                             </li>
-                            <li><strong>Code walkthrough</strong> — the lightweight implementation in PyTorch</li>
+                            <li><strong>Code walkthrough</strong>: the lightweight implementation in PyTorch</li>
                         </ol>
                     </div>
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">2/93</span>
                 </div>
@@ -1904,7 +1904,7 @@
         <section class="slide slide--section-break" data-index="2">
             <h2>Part 1 — Reasoning tasks &amp; evaluation</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">3/93</span>
                 </div>
@@ -1916,7 +1916,8 @@
             <div class="slide-content">
                 <p>A reasoning task is a question for which arriving at the correct answer requires the model to perform
                     <strong>several intermediate steps of inference</strong> that are not directly retrievable from
-                    training data.</p>
+                    training data.
+                </p>
                 <p>A useful working definition:</p>
                 <div class="colloquium-box colloquium-box--accent">
                     <div class="colloquium-box-title">Working definition</div>
@@ -1926,11 +1927,11 @@
                                 intermediate &quot;thinking&quot; tokens</strong> before its final answer.</p>
                     </div>
                 </div>
-                <p>Contrast with knowledge tasks (“What is the capital of France?”) — there the answer is essentially a
+                <p>Contrast with knowledge tasks (“What is the capital of France?”), where the answer is essentially a
                     lookup, and intermediate tokens do not help.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">4/93</span>
                 </div>
@@ -1943,22 +1944,22 @@
                 <p>Different domains, same underlying property: a verifiable final answer at the end of a non-trivial
                     chain of inference.</p>
                 <ul>
-                    <li><strong>Math</strong> — competition problems (AIME, MATH, GSM8K). Final numeric answer can be
+                    <li><strong>Math</strong>: competition problems (AIME, MATH, GSM8K). Final numeric answer can be
                         checked against ground truth.</li>
-                    <li><strong>Code</strong> — competitive programming, function synthesis. Final answer = passing or
+                    <li><strong>Code</strong>: competitive programming, function synthesis. Final answer = passing or
                         failing test cases (HumanEval, LiveCodeBench).</li>
-                    <li><strong>Logic puzzles</strong> — Sudoku, ARC-AGI grid puzzles. Solution can be programmatically
+                    <li><strong>Logic puzzles</strong>: Sudoku, ARC-AGI grid puzzles. Solution can be programmatically
                         verified.</li>
-                    <li><strong>Theorem proving</strong> — Lean / Coq proofs. The proof checker is the verifier.</li>
-                    <li><strong>Multi-hop QA</strong> — questions that require chaining facts (HotpotQA-style).
+                    <li><strong>Theorem proving</strong>: Lean / Coq proofs. The proof checker is the verifier.</li>
+                    <li><strong>Multi-hop QA</strong>: questions that require chaining facts (HotpotQA-style).
                         Verifiable when ground-truth chains exist.</li>
-                    <li><strong>Tool-use / agentic tasks</strong> — book a flight, run an experiment. The environment is
+                    <li><strong>Tool-use / agentic tasks</strong>: book a flight, run an experiment. The environment is
                         the verifier.</li>
                 </ul>
                 <p>The common thread: <strong>a deterministic, automatic check</strong> on the final output.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">5/93</span>
                 </div>
@@ -1973,17 +1974,19 @@
                     accuracy on reasoning tasks.</p>
                 <p>Two useful axes for distinguishing them:</p>
                 <ul>
-                    <li><strong>Where the reasoning lives</strong> — exposed to the user (DeepSeek-R1’s
-                        <code>&lt;think&gt;</code> blocks) vs hidden (o1’s analysis channel)</li>
-                    <li><strong>How the reasoning was trained</strong> — purely prompted (GPT-4 + CoT), SFT on reasoning
+                    <li><strong>Where the reasoning lives</strong>: exposed to the user (DeepSeek-R1’s
+                        <code>&lt;think&gt;</code> blocks) vs hidden (o1’s analysis channel)
+                    </li>
+                    <li><strong>How the reasoning was trained</strong>: purely prompted (GPT-4 + CoT), SFT on reasoning
                         traces, or RL with verifiable rewards (R1, o1)</li>
                 </ul>
                 <p>In modern usage, “reasoning model” almost always implies the third category: <strong>trained with RL
                         on verifiable rewards</strong> so that long chains of thought are not just possible but
-                    <em>learned</em>.</p>
+                    <em>learned</em>.
+                </p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">6/93</span>
                 </div>
@@ -1997,9 +2000,9 @@
                     <div class="colloquium-box-title">Inference-time vs Training-time</div>
                     <div class="colloquium-box-content">
                         <ul>
-                            <li><strong>Inference-time scaling</strong> — at test time, give the model more
+                            <li><strong>Inference-time scaling</strong>: at test time, give the model more
                                 tokens / samples / refinement rounds per prompt. No weight updates.</li>
-                            <li><strong>Training-time scaling</strong> — at train time, run more RL steps with
+                            <li><strong>Training-time scaling</strong>: at train time, run more RL steps with
                                 verifiable rewards so the model gets <em>intrinsically better</em> at
                                 producing useful reasoning chains.</li>
                         </ul>
@@ -2009,7 +2012,7 @@
                     compute. We will tour both, then connect them with a code walkthrough.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">7/93</span>
                 </div>
@@ -2025,20 +2028,20 @@
                     <div class="colloquium-box-title">Four evaluation families</div>
                     <div class="colloquium-box-content">
                         <ol>
-                            <li><strong>Verifiable evaluation</strong> — programmatic check on the final answer
+                            <li><strong>Verifiable evaluation</strong>: programmatic check on the final answer
                                 (math, code, logic). Cheap, deterministic, RL-friendly.</li>
-                            <li><strong>Multi-choice</strong> — pick A/B/C/D from a fixed set (MMLU, ARC).
+                            <li><strong>Multi-choice</strong>: pick A/B/C/D from a fixed set (MMLU, ARC).
                                 Cheap but limited expressivity.</li>
-                            <li><strong>Leaderboard / arena</strong> — pairwise human votes (Chatbot Arena).
+                            <li><strong>Leaderboard / arena</strong>: pairwise human votes (Chatbot Arena).
                                 Captures real preferences but slow and expensive.</li>
-                            <li><strong>LLM-as-judge</strong> — a strong model scores responses
+                            <li><strong>LLM-as-judge</strong>: a strong model scores responses
                                 (MT-Bench, AlpacaEval). Cheap but biased.</li>
                         </ol>
                     </div>
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">8/93</span>
                 </div>
@@ -2063,7 +2066,7 @@
                         boxed final answer</strong>.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">9/93</span>
                 </div>
@@ -2083,14 +2086,15 @@
                     <li>A regex like <code>r&quot;\\boxed\{([^}]*)\}&quot;</code> pulls out <code>&quot;42&quot;</code>.
                     </li>
                     <li>A normalizer canonicalizes both strings (strip whitespace, fractions like
-                        <code>1/2 == \frac{1}{2}</code>, etc.).</li>
+                        <code>1/2 == \frac{1}{2}</code>, etc.).
+                    </li>
                     <li>String equality (or <code>sympy.simplify(a - b) == 0</code> for symbolic answers) decides
                         correctness.</li>
                     <li>Reward = <strong>1 if correct, 0 otherwise</strong>.</li>
                 </ol>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">10/93</span>
                 </div>
@@ -2103,7 +2107,7 @@
                     alt="Verifiable reward pipeline: question → model → response with `\boxed{...}` → verifier → 0/1 reward."
                     style="width:120%;" /></div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">11/93</span>
                 </div>
@@ -2120,14 +2124,16 @@
                     <p>Q: Roger has 5 tennis balls. He buys 2 cans of 3 balls each. How many balls does he have now?
                         <br />
                         A: He starts with 5. New balls: <span class="math inline">2 \times 3 = 6</span>. Total: <span
-                            class="math inline">5 + 6 =</span>\boxed{11}.</p>
+                            class="math inline">5 + 6 =</span>\boxed{11}.
+                    </p>
                 </blockquote>
                 <p><strong>Example 2: Algebra</strong></p>
                 <blockquote>
                     <p>Q: Solve for <span class="math inline">x</span>: <span class="math inline">2x + 3 = 11</span>.
                         <br />
                         A: <span class="math inline">2x = 11 - 3 = 8</span>, so <span class="math inline">x =</span>
-                        \boxed{4}.</p>
+                        \boxed{4}.
+                    </p>
                 </blockquote>
                 <p><strong>Example 3: Competition (AIME-style)</strong></p>
                 <blockquote>
@@ -2136,7 +2142,7 @@
                 </blockquote>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">12/93</span>
                 </div>
@@ -2158,7 +2164,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">13/93</span>
                 </div>
@@ -2189,7 +2195,7 @@
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">14/93</span>
                 </div>
@@ -2205,7 +2211,7 @@
                 <p><strong>Pros</strong>:</p>
                 <ul>
                     <li>Closest proxy we have to “real users actually liking the model.”</li>
-                    <li>Captures helpfulness, style, formatting, calibration — things benchmarks miss.</li>
+                    <li>Captures helpfulness, style, formatting, calibration: things benchmarks miss.</li>
                 </ul>
                 <p><strong>Cons</strong>:</p>
                 <ul>
@@ -2218,7 +2224,7 @@
                 <p>Usable as a north-star eval, not as a per-rollout reward.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">15/93</span>
                 </div>
@@ -2251,7 +2257,7 @@
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">16/93</span>
                 </div>
@@ -2312,7 +2318,7 @@
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">17/93</span>
                 </div>
@@ -2322,7 +2328,7 @@
         <section class="slide slide--section-break" data-index="17">
             <h2>Part 2 — From classical language models to modern text generation</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">18/93</span>
                 </div>
@@ -2355,7 +2361,7 @@
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">19/93</span>
                 </div>
@@ -2379,7 +2385,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">20/93</span>
                 </div>
@@ -2405,7 +2411,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">21/93</span>
                 </div>
@@ -2427,7 +2433,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">22/93</span>
                 </div>
@@ -2468,13 +2474,13 @@
                                 <li>Use <span class="math inline">T \approx 0</span> when you want a <strong>single
                                         stable answer</strong> (final evaluation, production inference).</li>
                                 <li>Use <span class="math inline">T \in [0.7, 1.0]</span> when <strong>sampling many
-                                        diverse chains-of-thought</strong> for self-consistency — diversity is the whole
+                                        diverse chains-of-thought</strong> for self-consistency, diversity is the whole
                                     point.</li>
                             </ul>
                         </li>
                         <li>
                             <p><strong>Note</strong>: temperature alone does <strong>not</strong> remove low-probability
-                                tokens — it only reshapes the distribution.</p>
+                                tokens, it only reshapes the distribution.</p>
                         </li>
                         <li>
                             <p>Sampling over the whole dictionary is costly, so usually combine it with top-k or top-p.
@@ -2484,7 +2490,7 @@
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">23/93</span>
                 </div>
@@ -2505,7 +2511,7 @@
                     V_k} \pi_\theta(w \mid x, y_{&lt;t})}
                 </div>
                 <ul>
-                    <li>Sample from <span class="math inline">\tilde{P}</span> — usually <strong>combined with
+                    <li>Sample from <span class="math inline">\tilde{P}</span>, usually <strong>combined with
                             temperature</strong>. Typical values: <span class="math inline">k = 40</span> to <span
                             class="math inline">50</span>.</li>
                     <li>The <strong>problem</strong> with fixed <span class="math inline">k</span>: the shape of the
@@ -2523,7 +2529,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">24/93</span>
                 </div>
@@ -2536,7 +2542,8 @@
                 <ul>
                     <li><strong>Top-p sampling</strong> (a.k.a. <strong>nucleus sampling</strong>): keep the
                         <strong>smallest</strong> set <span class="math inline">V_p</span> of tokens whose cumulative
-                        probability is at least <span class="math inline">p</span>, then renormalize.</li>
+                        probability is at least <span class="math inline">p</span>, then renormalize.
+                    </li>
                     <li>Sort tokens by probability descending; let <span class="math inline">V_p</span> be the smallest
                         prefix such that</li>
                 </ul>
@@ -2560,7 +2567,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">25/93</span>
                 </div>
@@ -2580,14 +2587,15 @@
                         <li><strong>Top-p</strong> keeps whatever number of tokens is needed to cover 90% of the mass
                             (here it picked 6).</li>
                         <li>Both <strong>renormalize</strong> the surviving tokens to sum to 1, so the kept bars get
-                            <em>taller</em> than in the original.</li>
+                            <em>taller</em> than in the original.
+                        </li>
                         <li>The usual production recipe: <strong>temperature + top-p</strong>, with top-k disabled or
                             set very high (e.g. <span class="math inline">k=1000</span>) as a safety net only.</li>
                     </ul>
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">26/93</span>
                 </div>
@@ -2616,7 +2624,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">27/93</span>
                 </div>
@@ -2626,7 +2634,7 @@
         <section class="slide slide--section-break" data-index="27">
             <h2>Part 3 — Inference-time scaling</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">28/93</span>
                 </div>
@@ -2651,7 +2659,7 @@
                 <p>All three trade FLOPs for accuracy. The art is knowing which to spend on which task.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">29/93</span>
                 </div>
@@ -2679,7 +2687,7 @@
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">30/93</span>
                 </div>
@@ -2707,7 +2715,7 @@
                         class="colloquium-cite">Wei et al., 2023</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">31/93</span>
                 </div>
@@ -2728,7 +2736,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">32/93</span>
                 </div>
@@ -2754,7 +2762,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">33/93</span>
                 </div>
@@ -2782,7 +2790,7 @@
                     are far more robust to long CoT.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">34/93</span>
                 </div>
@@ -2810,7 +2818,8 @@
                     </li>
                     <li>
                         <p>Cost is roughly <span class="math inline">N \times</span> a single CoT, so this is a clean
-                            <strong>compute → accuracy</strong> dial.</p>
+                            <strong>compute → accuracy</strong> dial.
+                        </p>
                     </li>
                 </ul>
             </div>
@@ -2819,7 +2828,7 @@
                         class="colloquium-cite">Wang et al., 2023</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">35/93</span>
                 </div>
@@ -2840,7 +2849,7 @@
                     then saturate.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">36/93</span>
                 </div>
@@ -2866,7 +2875,7 @@
                     verifier or a learned reward model and pick the highest-scoring one.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">37/93</span>
                 </div>
@@ -2896,7 +2905,7 @@
                         class="colloquium-cite">Madaan et al., 2023</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">38/93</span>
                 </div>
@@ -2919,7 +2928,7 @@
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">39/93</span>
                 </div>
@@ -2933,8 +2942,8 @@
                     <ul>
                         <li>Self-refinement needs a way to <strong>compare two candidate sequences</strong> and pick the
                             better one. We need a scoring function.</li>
-                        <li>The simplest and <strong>cheapest</strong> score — one we get <strong>for free</strong> from
-                            generation — is the model’s own log-probability of the sequence:</li>
+                        <li>The simplest and <strong>cheapest</strong> score, one we get <strong>for free</strong> from
+                            generation, is the model’s own log-probability of the sequence:</li>
                     </ul>
                     <div class="math block">
                         \log \pi_\theta(y \mid x) = \sum_{t=1}^{|y|} \log \pi_\theta\!\left(y_t \mid x,\,
@@ -2945,14 +2954,16 @@
                         <div class="colloquium-box-content">
                             <p>&quot;how confident was the model, on average, at each step of producing this
                                 sequence.&quot; A higher (less negative) log-prob means the sequence is more
-                                <strong>natural</strong> under the model.</p>
+                                <strong>natural</strong> under the model.
+                            </p>
                         </div>
                     </div>
                     <ul>
                         <li>
                             <p>Every per-token <span class="math inline">\log \pi_\theta(y_t \mid x, y_{&lt;t})</span>
-                                was already computed by the forward pass during generation — scoring is essentially
-                                <strong>free</strong>.</p>
+                                was already computed by the forward pass during generation, scoring is essentially
+                                <strong>free</strong>.
+                            </p>
                         </li>
                         <li>
                             <p>In code (Pytorch):</p>
@@ -2967,7 +2978,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">40/93</span>
                 </div>
@@ -2981,8 +2992,9 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                     <ul>
                         <li><strong>Problem</strong>: every per-token log-prob is negative, so the raw sum is
                             <strong>systematically biased toward shorter sequences</strong>. A terse answer always has a
-                            higher raw log-prob than a detailed chain-of-thought that reaches the same conclusion.</li>
-                        <li><strong>Fix</strong>: divide by sequence length to get the <strong>mean log-prob</strong> —
+                            higher raw log-prob than a detailed chain-of-thought that reaches the same conclusion.
+                        </li>
+                        <li><strong>Fix</strong>: divide by sequence length to get the <strong>mean log-prob</strong>:
                             equivalently, the log of the geometric mean token probability:</li>
                     </ul>
                     <div class="math block">
@@ -2995,7 +3007,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                 </center>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">41/93</span>
                 </div>
@@ -3029,7 +3041,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">42/93</span>
                 </div>
@@ -3054,7 +3066,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">43/93</span>
                 </div>
@@ -3095,11 +3107,11 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                         </tr>
                     </tbody>
                 </table>
-                <p>These knobs are <strong>bounded</strong> by the underlying model — eventually you stop getting
+                <p>These knobs are <strong>bounded</strong> by the underlying model, eventually you stop getting
                     returns. Which is exactly why we now turn to <strong>training-time scaling</strong>.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">44/93</span>
                 </div>
@@ -3109,7 +3121,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
         <section class="slide slide--section-break" data-index="44">
             <h2>Part 4 — Training-time scaling</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">45/93</span>
                 </div>
@@ -3133,7 +3145,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                     flip: <strong>pay once at training, save every query</strong>.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">46/93</span>
                 </div>
@@ -3166,7 +3178,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                         class="colloquium-cite">OpenAI, 2024</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">47/93</span>
                 </div>
@@ -3186,7 +3198,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                     ending with the rightmost box (preference / RL tuning) blown up into PPO and GRPO.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">48/93</span>
                 </div>
@@ -3212,7 +3224,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                 <p>We will spend the rest of the talk unpacking stages 1–5, with most attention on stage 5.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">49/93</span>
                 </div>
@@ -3230,16 +3242,17 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                     <li>Objective: cross-entropy on next-token prediction.</li>
                     <li>Output: a “base model” with broad world knowledge but no chat behavior.</li>
                 </ul>
-                <p>Pre-training accounts for the majority of training compute spent on a frontier model — and per the
+                <p>Pre-training accounts for the majority of training compute spent on a frontier model, and per the
                     <strong>Elicitation Theory</strong> of post-training, it sets the <em>ceiling</em> of what the model
-                    can ever do. Post-training only <strong>reaches</strong> that ceiling.</p>
+                    can ever do. Post-training only <strong>reaches</strong> that ceiling.
+                </p>
             </div>
             <div class="colloquium-slide-meta colloquium-slide-meta--right">
                 <div class="colloquium-slide-cite"><a href="#colloquium-ref-kaplan2020scaling"
                         class="colloquium-cite">Kaplan et al., 2020</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">50/93</span>
                 </div>
@@ -3257,7 +3270,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">51/93</span>
                 </div>
@@ -3286,7 +3299,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">52/93</span>
                 </div>
@@ -3309,7 +3322,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">53/93</span>
                 </div>
@@ -3330,7 +3343,7 @@ seq_logp  = (token_lp * completion_mask).sum(dim=-1)      # sum of log-probs of 
                 <p>The model emerges able to answer questions in the expected role-based format.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">54/93</span>
                 </div>
@@ -3355,14 +3368,15 @@ What is 2+2?&lt;|im_end|&gt;
 4&lt;|im_end|&gt;                 &lt;-- gradients only on these tokens
 </code></pre>
                 <p>The model learns to <strong>answer like a chatbot</strong>, but does not yet learn
-                    <strong>which</strong> answer humans prefer when several plausible ones exist.</p>
+                    <strong>which</strong> answer humans prefer when several plausible ones exist.
+                </p>
             </div>
             <div class="colloquium-slide-meta colloquium-slide-meta--right">
                 <div class="colloquium-slide-cite"><a href="#colloquium-ref-ouyang2022training"
                         class="colloquium-cite">Ouyang et al., 2022</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">55/93</span>
                 </div>
@@ -3372,8 +3386,8 @@ What is 2+2?&lt;|im_end|&gt;
         <section class="slide slide--content" data-index="55">
             <h2>Why we still need preference tuning</h2>
             <div class="slide-content">
-                <p>SFT teaches the model a good answer for each prompt — typically the one a human labeler wrote. But
-                    for any prompt there are many plausible answers, varying in tone, length, helpfulness, safety,
+                <p>SFT teaches the model a good answer for each prompt, typically the one a human labeler wrote. But for
+                    any prompt there are many plausible answers, varying in tone, length, helpfulness, safety,
                     calibration.</p>
                 <p>Two responses can both be technically correct but vastly different in usefulness:</p>
                 <ul>
@@ -3385,10 +3399,11 @@ What is 2+2?&lt;|im_end|&gt;
                             right</strong></li>
                 </ul>
                 <p>SFT cannot easily express “I prefer A over B.” We need a way to push the model toward
-                    <em>preferred</em> completions. That’s the job of <strong>preference tuning</strong>.</p>
+                    <em>preferred</em> completions. That’s the job of <strong>preference tuning</strong>.
+                </p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">56/93</span>
                 </div>
@@ -3414,7 +3429,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">57/93</span>
                 </div>
@@ -3424,7 +3439,7 @@ What is 2+2?&lt;|im_end|&gt;
         <section class="slide slide--section-break" data-index="57">
             <h2>Part 4a — The path to modern RLHF</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">58/93</span>
                 </div>
@@ -3448,7 +3463,7 @@ What is 2+2?&lt;|im_end|&gt;
                         class="colloquium-cite">Sutton &amp; Barto, 2018</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">59/93</span>
                 </div>
@@ -3484,7 +3499,7 @@ What is 2+2?&lt;|im_end|&gt;
                         class="colloquium-cite">Sutton &amp; Barto, 2018</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">60/93</span>
                 </div>
@@ -3501,14 +3516,15 @@ What is 2+2?&lt;|im_end|&gt;
                         at the token level, the transition is deterministic (append the token).</li>
                     <li><strong>The reward function is hard to write.</strong> “Helpful,” “harmless,” “well-written”
                         cannot be expressed in code. We need <strong>learned rewards</strong> (RLHF) or
-                        <strong>verifiable proxies</strong> (RLVR).</li>
+                        <strong>verifiable proxies</strong> (RLVR).
+                    </li>
                     <li><strong>The reward is sparse and terminal.</strong> The model speaks for hundreds or thousands
                         of tokens before any reward arrives, credit assignment is the central technical challenge.</li>
                 </ul>
                 <p>These three differences shape every algorithmic choice that follows.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">61/93</span>
                 </div>
@@ -3518,7 +3534,7 @@ What is 2+2?&lt;|im_end|&gt;
         <section class="slide slide--section-break" data-index="61">
             <h2>Part 4b — Reinforcement Learning from Human Feedback</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">62/93</span>
                 </div>
@@ -3538,7 +3554,8 @@ What is 2+2?&lt;|im_end|&gt;
                         continuation is rarely the most useful one.</li>
                 </ul>
                 <p>RLHF lets us optimize for behavior we can <strong>evaluate</strong> even when we cannot easily
-                    <strong>specify</strong> the reward function, by learning the reward from human comparisons.</p>
+                    <strong>specify</strong> the reward function, by learning the reward from human comparisons.
+                </p>
             </div>
             <div class="colloquium-slide-meta colloquium-slide-meta--right">
                 <div class="colloquium-slide-cite"><a href="#colloquium-ref-christiano2017"
@@ -3546,7 +3563,7 @@ What is 2+2?&lt;|im_end|&gt;
                         href="#colloquium-ref-ouyang2022training" class="colloquium-cite">Ouyang et al., 2022</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">63/93</span>
                 </div>
@@ -3571,7 +3588,7 @@ What is 2+2?&lt;|im_end|&gt;
                         class="colloquium-cite">Ouyang et al., 2022</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">64/93</span>
                 </div>
@@ -3596,7 +3613,7 @@ What is 2+2?&lt;|im_end|&gt;
                     responses.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">65/93</span>
                 </div>
@@ -3628,7 +3645,7 @@ What is 2+2?&lt;|im_end|&gt;
                         href="#colloquium-ref-ouyang2022training" class="colloquium-cite">Ouyang et al., 2022</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">66/93</span>
                 </div>
@@ -3664,7 +3681,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">67/93</span>
                 </div>
@@ -3674,7 +3691,7 @@ What is 2+2?&lt;|im_end|&gt;
         <section class="slide slide--section-break" data-index="67">
             <h2>Part 4c — Proximal Policy Optimization (PPO)</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">68/93</span>
                 </div>
@@ -3701,14 +3718,15 @@ What is 2+2?&lt;|im_end|&gt;
                         high reward, down-weight ones that didn’t</em>.</p>
                 <ul>
                     <li><strong>Problem</strong>:
-                        The expectation is over <span class="math inline">y \sim \pi_\theta</span> — the
+                        The expectation is over <span class="math inline">y \sim \pi_\theta</span>, the
                         <strong>current</strong> policy. The instant we update <span class="math inline">\theta</span>,
                         our rollouts are stale. We’d have to generate fresh rollouts after every gradient step. For
-                        LLMs, where generation dominates compute, this is unaffordable.</li>
+                        LLMs, where generation dominates compute, this is unaffordable.
+                    </li>
                 </ul>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">69/93</span>
                 </div>
@@ -3721,7 +3739,8 @@ What is 2+2?&lt;|im_end|&gt;
                 <div class="text-xs">
                     <p>We want <strong>many</strong> gradient steps per batch of rollouts. Trick: collect responses with
                         a frozen snapshot <span class="math inline">\pi_{\theta_{\text{old}}}</span>, then optimize
-                        <span class="math inline">\pi_\theta</span> off-policy.</p>
+                        <span class="math inline">\pi_\theta</span> off-policy.
+                    </p>
                     <p>The <strong>importance sampling identity</strong>:</p>
                     <div class="math block">
                         \mathbb{E}_{y \sim p}[f(y)] \;=\; \mathbb{E}_{y \sim q}\!\left[\frac{p(y)}{q(y)}\, f(y)\right]
@@ -3745,7 +3764,7 @@ What is 2+2?&lt;|im_end|&gt;
                         \end{aligned}
                     </div>
                     <p>We’ve also replaced the raw reward with the <strong>advantage</strong> <span
-                            class="math inline">\hat{A}_t</span> — same idea, lower variance.</p>
+                            class="math inline">\hat{A}_t</span>, same idea, lower variance.</p>
                     <div class="math block">
                         J_{\text{IS}}(\theta) = \mathbb{E}_{x \sim \mathcal{D},\; y \sim
                         \pi_{\theta_{\text{old}}}}\!\left[\, \frac{1}{|y|} \sum_{t=1}^{|y|} \frac{\pi_\theta(y_t \mid x,
@@ -3758,13 +3777,14 @@ What is 2+2?&lt;|im_end|&gt;
                             class="math inline">\pi_{\theta_{\text{old}}}</span>.</p>
                     <ul>
                         <li><strong>New problem</strong>: If <span class="math inline">\pi_\theta</span> drifts too far,
-                            <span class="math inline">\rho_t</span> can blow up — one outlier token dominates the
-                            gradient and training becomes unstable.</li>
+                            <span class="math inline">\rho_t</span> can blow up, one outlier token dominates the
+                            gradient and training becomes unstable.
+                        </li>
                     </ul>
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">70/93</span>
                 </div>
@@ -3807,7 +3827,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">71/93</span>
                 </div>
@@ -3818,7 +3838,7 @@ What is 2+2?&lt;|im_end|&gt;
             <h2>The full LLM-PPO objective in practice</h2>
             <div class="slide-content">
                 <div class="text-xs">
-                    <p>Slide 3 dropped the KL for clarity. In real RLHF pipelines, it comes back — but
+                    <p>Slide 3 dropped the KL for clarity. In real RLHF pipelines, it comes back, but
                         <strong>not</strong> in the loss. Instead, the per-token KL is folded directly into the reward:
                     </p>
                     <div class="math block">
@@ -3828,7 +3848,8 @@ What is 2+2?&lt;|im_end|&gt;
                     </div>
                     <p>The advantage <span class="math inline">\hat{A}_t</span> is then computed from these
                         <em>KL-shaped</em> per-token rewards <span class="math inline">\tilde{r}_t</span> (typically via
-                        GAE), and plugged into the same clipped objective from slide 3:</p>
+                        GAE), and plugged into the same clipped objective from slide 3:
+                    </p>
                     <div class="math block">
                         J_{\text{PPO}}(\theta) \;=\;
                         \mathbb{E}_{x,\,y}\!\left[\,\frac{1}{|y|}\sum_{t=1}^{|y|}\min\!\Big(\frac{\pi_\theta(y_t \mid x,
@@ -3848,11 +3869,12 @@ What is 2+2?&lt;|im_end|&gt;
                     <p>With a <strong>verifiable</strong> reward (math correct? tests pass?), the proxy is exact and
                         reward hacking largely disappears, so practitioners often set <span class="math inline">\beta =
                             0</span> and drop the reference model entirely. That’s one of the simplifications
-                        <strong>GRPO</strong> will exploit.</p>
+                        <strong>GRPO</strong> will exploit.
+                    </p>
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">72/93</span>
                 </div>
@@ -3864,7 +3886,7 @@ What is 2+2?&lt;|im_end|&gt;
             <div class="slide-content">
                 <div class="text-xs">
                     <p>We’ve been treating <span class="math inline">\hat{A}_t</span> as if it falls from the sky. In
-                        PPO it doesn’t — it’s computed from a <strong>second neural network</strong>, the <strong>value
+                        PPO it doesn’t, it’s computed from a <strong>second neural network</strong>, the <strong>value
                             function</strong> <span class="math inline">V_\phi(x, y_{&lt;t})</span>, trained alongside
                         the policy.</p>
                     <p><span class="math inline">V_\phi</span> predicts the <em>expected future reward</em> from token
@@ -3904,7 +3926,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">73/93</span>
                 </div>
@@ -3914,7 +3936,7 @@ What is 2+2?&lt;|im_end|&gt;
         <section class="slide slide--section-break" data-index="73">
             <h2>Part 4d — Group Relative Policy Optimization (GRPO)</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">74/93</span>
                 </div>
@@ -3943,7 +3965,7 @@ What is 2+2?&lt;|im_end|&gt;
                         class="colloquium-cite">Shao et al., 2024</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">75/93</span>
                 </div>
@@ -3967,7 +3989,7 @@ What is 2+2?&lt;|im_end|&gt;
                 <p>Positive if it beat the group average and negative otherwise. <strong>No critic needed.</strong></p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">76/93</span>
                 </div>
@@ -4004,7 +4026,7 @@ What is 2+2?&lt;|im_end|&gt;
                         class="colloquium-cite">Guo et al., 2025</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">77/93</span>
                 </div>
@@ -4033,7 +4055,7 @@ What is 2+2?&lt;|im_end|&gt;
                         class="colloquium-cite">Shao et al., 2024</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">78/93</span>
                 </div>
@@ -4089,7 +4111,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">79/93</span>
                 </div>
@@ -4105,7 +4127,7 @@ What is 2+2?&lt;|im_end|&gt;
                     <div class="colloquium-box-content">
                         <p>Apply the same RL algorithms (PPO, GRPO, REINFORCE, ...) to LLMs,
                             but replace the learned reward model with a <strong>deterministic
-                                verifier</strong> — for math, the verifier extracts \boxed{·} and checks it
+                                verifier</strong>: for math, the verifier extracts \boxed{·} and checks it
                             against the gold answer; for code, it runs unit tests; for proofs,
                             it runs the proof checker.</p>
                     </div>
@@ -4114,7 +4136,8 @@ What is 2+2?&lt;|im_end|&gt;
                     <li><strong>No learned reward model → no proxy objective → much less reward hacking.</strong></li>
                     <li>KL penalty is often reduced or removed entirely (since the reward is ground truth).</li>
                     <li>Term coined in <strong>Tülu 3</strong> (Lambert et al. 2024), popularized by
-                        <strong>DeepSeek-R1</strong>.</li>
+                        <strong>DeepSeek-R1</strong>.
+                    </li>
                 </ul>
             </div>
             <div class="colloquium-slide-meta colloquium-slide-meta--right">
@@ -4122,7 +4145,7 @@ What is 2+2?&lt;|im_end|&gt;
                         class="colloquium-cite">Guo et al., 2025</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">80/93</span>
                 </div>
@@ -4177,7 +4200,7 @@ What is 2+2?&lt;|im_end|&gt;
                 <p>The fewer moving parts, the more compute can be poured into the actual policy gradient.</p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">81/93</span>
                 </div>
@@ -4249,7 +4272,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </table>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">82/93</span>
                 </div>
@@ -4261,13 +4284,13 @@ What is 2+2?&lt;|im_end|&gt;
             <div class="slide-content">
                 <p>A high-level pattern across the last three years of RL-on-LLMs:</p>
                 <ul>
-                    <li><strong>2022 (InstructGPT)</strong> — Full PPO with learned RM, GAE, value function, KL in
+                    <li><strong>2022 (InstructGPT)</strong>: Full PPO with learned RM, GAE, value function, KL in
                         reward.</li>
-                    <li><strong>2024 (DeepSeekMath)</strong> — GRPO drops the value function. Group baseline replaces
+                    <li><strong>2024 (DeepSeekMath)</strong>: GRPO drops the value function. Group baseline replaces
                         GAE.</li>
-                    <li><strong>2025 (DeepSeek-R1, Olmo 3)</strong> — GRPO + verifier for math/code. Often no KL, no SFT
+                    <li><strong>2025 (DeepSeek-R1, Olmo 3)</strong>: GRPO + verifier for math/code. Often no KL, no SFT
                         before RL.</li>
-                    <li><strong>2025+ (DAPO, Dr.GRPO, GSPO, CISPO)</strong> — Further simplifications and
+                    <li><strong>2025+ (DAPO, Dr.GRPO, GSPO, CISPO)</strong>: Further simplifications and
                         length-normalization tricks; more compute, simpler losses.</li>
                 </ul>
                 <div class="colloquium-box colloquium-box--accent">
@@ -4280,7 +4303,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">83/93</span>
                 </div>
@@ -4288,9 +4311,9 @@ What is 2+2?&lt;|im_end|&gt;
         </section>
 
         <section class="slide slide--section-break" data-index="83">
-            <h2>Part 6 — Code walkthrough: the minimal GRPO pipeline</h2>
+            <h2>Part 5 — Code walkthrough: the minimal GRPO pipeline</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">84/93</span>
                 </div>
@@ -4300,11 +4323,11 @@ What is 2+2?&lt;|im_end|&gt;
         <section class="slide slide--content" data-index="84">
             <h2>My implementation</h2>
             <div class="slide-content">
-                <p><a href="https://github.com/nptdat/tiny-reasoning-model"
-                        class="colloquium-builtwith">https://github.com/nptdat/tiny-reasoning-model</a></p>
+                <p><a href="https://github.com/vjai-community/tiny-reasoning-model"
+                        class="colloquium-builtwith">https://github.com/vjai-community/tiny-reasoning-model</a></p>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">85/93</span>
                 </div>
@@ -4331,7 +4354,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">86/93</span>
                 </div>
@@ -4362,7 +4385,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">87/93</span>
                 </div>
@@ -4372,7 +4395,7 @@ What is 2+2?&lt;|im_end|&gt;
         <section class="slide slide--section-break" data-index="87">
             <h2>Part 6 — Wrap-up</h2>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">88/93</span>
                 </div>
@@ -4386,23 +4409,23 @@ What is 2+2?&lt;|im_end|&gt;
                     <div class="colloquium-box-title">Key takeaways</div>
                     <div class="colloquium-box-content">
                         <ol>
-                            <li><strong>Verifiable rewards</strong> are the engine — without a cheap deterministic
+                            <li><strong>Verifiable rewards</strong>: are the engine, without a cheap deterministic
                                 check, you cannot do RLVR at scale.</li>
                             <li><strong>Inference-time scaling</strong> (CoT, self-consistency, self-refinement)
-                                is real but bounded — it samples capability, doesn't create it.</li>
+                                is real but bounded, it samples capability, doesn't create it.</li>
                             <li><strong>Training-time scaling</strong> with RL <strong>moves the capability
-                                    ceiling</strong> —
+                                    ceiling</strong>:
                                 this is what o1, R1, o3 are doing.</li>
-                            <li><strong>GRPO is PPO minus the value function</strong> — drop the critic, use
+                            <li><strong>GRPO is PPO minus the value function</strong>: drop the critic, use
                                 group statistics for the baseline, keep the clipped surrogate.</li>
-                            <li><strong>The hard parts are not the math</strong> — they are masking, padding,
+                            <li><strong>The hard parts are not the math</strong>: they are masking, padding,
                                 stale log-probs, zero-std groups, and reward hacking.</li>
                         </ol>
                     </div>
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">89/93</span>
                 </div>
@@ -4426,7 +4449,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">90/93</span>
                 </div>
@@ -4457,7 +4480,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">91/93</span>
                 </div>
@@ -4498,7 +4521,7 @@ What is 2+2?&lt;|im_end|&gt;
                 </div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">92/93</span>
                 </div>
@@ -4519,7 +4542,7 @@ What is 2+2?&lt;|im_end|&gt;
                         class="colloquium-ref-url">[link]</a></div>
             </div>
             <div class="colloquium-footer">
-                <div class="colloquium-footer-left">VJAI Meeting #2 - 2026</div>
+                <div class="colloquium-footer-left">VJAI Seminar #2 - 2026</div>
                 <div class="colloquium-footer-center">Reasoning Models in Practice</div>
                 <div class="colloquium-footer-right colloquium-footer-nav"><span class="colloquium-counter">93/93</span>
                 </div>
