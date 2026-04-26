@@ -7,6 +7,7 @@
 4. [Large-Scale Talent Flow Embedding for Company Competitive Analysis (WWW'20)](paper_talentflow.html)
 5. [Mask-RCNN for Instance Segmentation](https://speakerdeck.com/nptdat/mask-rcnn-for-instance-segmentation)
 6. [An Introduction to Semantic Search](https://speakerdeck.com/nptdat/an-introduction-to-semantic-search)
+7. [Reasoning Models in Practice: From Inference-Time to Training-Time Scaling on Verifiable Tasks](https://speakerdeck.com/nptdat/reasoning-models-in-practice-from-inference-time-to-training-time-scaling-on-verifiable-tasks)
 
 # Steps to publish presentations
 - Create a public repo

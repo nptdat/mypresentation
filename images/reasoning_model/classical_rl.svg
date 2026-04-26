@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#374151"/>
+    </marker>
+  </defs>
+  <!-- Agent box -->
+  <rect x="80" y="120" width="200" height="120" rx="12" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="180" y="170" text-anchor="middle" font-size="24" font-weight="700" fill="#1e3a8a">Agent</text>
+  <text x="180" y="200" text-anchor="middle" font-size="14" fill="#1e3a8a">policy π(a|s)</text>
+  <text x="180" y="220" text-anchor="middle" font-size="14" fill="#1e3a8a">value V(s)</text>
+
+  <!-- Environment box -->
+  <rect x="440" y="120" width="200" height="120" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="540" y="170" text-anchor="middle" font-size="24" font-weight="700" fill="#14532d">Environment</text>
+  <text x="540" y="200" text-anchor="middle" font-size="14" fill="#14532d">dynamics P(s'|s,a)</text>
+  <text x="540" y="220" text-anchor="middle" font-size="14" fill="#14532d">reward r(s,a)</text>
+
+  <!-- Action arrow (agent -> env), top -->
+  <path d="M 280 150 C 360 90, 360 90, 440 150" fill="none" stroke="#374151" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="360" y="80" text-anchor="middle" font-size="16" font-weight="600" fill="#111827">action a_t</text>
+
+  <!-- State+reward arrow (env -> agent), bottom -->
+  <path d="M 440 210 C 360 280, 360 280, 280 210" fill="none" stroke="#374151" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="360" y="305" text-anchor="middle" font-size="16" font-weight="600" fill="#111827">state s_{t+1}, reward r_t</text>
+
+  <!-- Title -->
+  <text x="360" y="40" text-anchor="middle" font-size="18" font-weight="700" fill="#111827">Reinforcement Learning Loop</text>
+</svg>

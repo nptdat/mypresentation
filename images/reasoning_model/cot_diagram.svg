@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 460" font-family="Inter, system-ui, sans-serif">
+  <!-- Title -->
+  <text x="550" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#111827">Chain-of-Thought (CoT): Standard vs CoT prompting</text>
+  <text x="550" y="55" text-anchor="middle" font-size="13" fill="#374151">Same model — only the prompt format changes. CoT exposes intermediate reasoning tokens.</text>
+
+  <!-- Standard prompting (left) -->
+  <rect x="40" y="90" width="480" height="340" rx="12" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="280" y="120" text-anchor="middle" font-size="16" font-weight="700" fill="#92400e">Standard Prompting</text>
+
+  <rect x="60" y="140" width="440" height="100" rx="8" fill="#fffbeb" stroke="#f59e0b" stroke-width="1"/>
+  <text x="80" y="162" font-size="12" font-weight="700" fill="#92400e">Prompt:</text>
+  <text x="80" y="184" font-size="12" fill="#92400e">Q: Roger has 5 tennis balls. He buys 2 cans, each with 3 balls.</text>
+  <text x="80" y="200" font-size="12" fill="#92400e">How many balls does he have?</text>
+  <text x="80" y="222" font-size="12" font-weight="700" fill="#92400e">A:</text>
+
+  <rect x="60" y="260" width="440" height="80" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="1"/>
+  <text x="80" y="282" font-size="12" font-weight="700" fill="#7f1d1d">Model output:</text>
+  <text x="80" y="304" font-size="14" font-weight="700" fill="#7f1d1d">"11" (often wrong on multi-step problems)</text>
+
+  <text x="280" y="380" text-anchor="middle" font-size="13" font-style="italic" fill="#92400e">Single token → no room to "think"</text>
+  <text x="280" y="395" text-anchor="middle" font-size="12" fill="#92400e">Forced to guess after a fixed amount of compute</text>
+
+  <!-- CoT prompting (right) -->
+  <rect x="580" y="90" width="480" height="340" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="820" y="120" text-anchor="middle" font-size="16" font-weight="700" fill="#14532d">Chain-of-Thought Prompting</text>
+
+  <rect x="600" y="140" width="440" height="100" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1"/>
+  <text x="620" y="162" font-size="12" font-weight="700" fill="#14532d">Prompt:</text>
+  <text x="620" y="184" font-size="12" fill="#14532d">Q: Roger has 5 tennis balls. He buys 2 cans, each with 3 balls.</text>
+  <text x="620" y="206" font-size="12" fill="#14532d">How many balls does he have? Let's think step by step.</text>
+  <text x="620" y="228" font-size="12" font-weight="700" fill="#14532d">A: </text>
+
+  <rect x="600" y="260" width="440" height="80" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+  <text x="620" y="282" font-size="12" font-weight="700" fill="#14532d">Model output:</text>
+  <text x="620" y="302" font-size="12" fill="#14532d">"Roger starts with 5. He buys 2 cans with 3 each,</text>
+  <text x="620" y="318" font-size="12" fill="#14532d">so 2 × 3 = 6 new balls. Total = 5 + 6 = 11. So final answer is \boxed{11}"</text>
+  <text x="620" y="378" font-size="12" font-style="italic" fill="#14532d">More tokens used = more "compute" per problem</text>
+</svg>

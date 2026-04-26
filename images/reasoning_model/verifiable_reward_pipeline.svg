@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 360" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#374151"/>
+    </marker>
+  </defs>
+
+  <!-- Question -->
+  <rect x="20" y="120" width="180" height="120" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="110" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="#92400e">Question x</text>
+  <text x="110" y="180" text-anchor="middle" font-size="12" fill="#92400e">"Solve 2x + 3 = 11"</text>
+  <text x="110" y="210" text-anchor="middle" font-size="12" fill="#92400e">ground truth: 4</text>
+
+  <!-- Model -->
+  <rect x="240" y="120" width="180" height="120" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="330" y="170" text-anchor="middle" font-size="20" font-weight="700" fill="#1e3a8a">LLM</text>
+  <text x="330" y="200" text-anchor="middle" font-size="12" fill="#1e3a8a">generates response y</text>
+
+  <!-- Response -->
+  <rect x="460" y="100" width="220" height="160" rx="10" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="570" y="125" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">Response y</text>
+  <text x="570" y="150" text-anchor="middle" font-size="11" fill="#5b21b6">"Subtract 3 from both</text>
+  <text x="570" y="166" text-anchor="middle" font-size="11" fill="#5b21b6">sides: 2x = 8.</text>
+  <text x="570" y="182" text-anchor="middle" font-size="11" fill="#5b21b6">Divide by 2: x = 4.</text>
+  <text x="570" y="208" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">\boxed{4}"</text>
+  <text x="570" y="240" text-anchor="middle" font-size="11" font-style="italic" fill="#5b21b6">Reasoning + boxed answer</text>
+
+  <!-- Extractor -->
+  <rect x="720" y="120" width="160" height="120" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+  <text x="800" y="160" text-anchor="middle" font-size="14" font-weight="700" fill="#7f1d1d">Verifier</text>
+  <text x="800" y="185" text-anchor="middle" font-size="11" fill="#7f1d1d">extract \boxed{·}</text>
+  <text x="800" y="205" text-anchor="middle" font-size="11" fill="#7f1d1d">compare to ground-truth</text>
+
+  <!-- Reward -->
+  <rect x="920" y="120" width="160" height="120" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="1000" y="160" text-anchor="middle" font-size="14" font-weight="700" fill="#14532d">Reward R(x,y)</text>
+  <text x="1000" y="190" text-anchor="middle" font-size="20" font-weight="700" fill="#14532d">∈ {0, 1}</text>
+  <text x="1000" y="215" text-anchor="middle" font-size="11" fill="#14532d">no learned RM!</text>
+
+  <!-- Arrows -->
+  <path d="M 200 180 L 240 180" stroke="#374151" stroke-width="2.5" marker-end="url(#arr2)"/>
+  <path d="M 420 180 L 460 180" stroke="#374151" stroke-width="2.5" marker-end="url(#arr2)"/>
+  <path d="M 680 180 L 720 180" stroke="#374151" stroke-width="2.5" marker-end="url(#arr2)"/>
+  <path d="M 880 180 L 920 180" stroke="#374151" stroke-width="2.5" marker-end="url(#arr2)"/>
+</svg>
