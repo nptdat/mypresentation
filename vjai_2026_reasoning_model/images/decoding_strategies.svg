@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 460" font-family="Inter, system-ui, sans-serif">
+  <!-- Title -->
+  <text x="550" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#111827">Decoding filters: Original → Top-k → Top-p (same input, different sampling set)</text>
+  <text x="550" y="55" text-anchor="middle" font-size="12" fill="#374151">Ten candidate tokens A..J with example probabilities. Y-axis scale is identical across panels, so renormalization is visible.</text>
+
+  <!-- Common y-axis values -->
+  <!-- scale: prob 0.5 = 220px  → scale factor = 440 -->
+
+  <!-- ===== Panel 1: Original ===== -->
+  <g transform="translate(30, 90)">
+    <text x="170" y="0" text-anchor="middle" font-size="15" font-weight="700" fill="#1e3a8a">Original p(·)</text>
+    <text x="170" y="18" text-anchor="middle" font-size="11" fill="#374151">model's raw softmax output</text>
+
+    <!-- axes -->
+    <line x1="40" y1="300" x2="320" y2="300" stroke="#111827" stroke-width="1.2"/>
+    <line x1="40" y1="70" x2="40" y2="300" stroke="#111827" stroke-width="1.2"/>
+    <!-- y ticks -->
+    <line x1="37" y1="300" x2="40" y2="300" stroke="#111827"/>
+    <text x="32" y="304" text-anchor="end" font-size="10" fill="#374151">0</text>
+    <line x1="37" y1="190" x2="40" y2="190" stroke="#111827"/>
+    <text x="32" y="194" text-anchor="end" font-size="10" fill="#374151">0.25</text>
+    <line x1="37" y1="80" x2="40" y2="80" stroke="#111827"/>
+    <text x="32" y="84" text-anchor="end" font-size="10" fill="#374151">0.5</text>
+
+    <!-- bars: heights = p * 440 -->
+    <!-- A=0.35 → 154, B=0.25 → 110, C=0.15 → 66, D=0.08 → 35, E=0.06 → 26, F=0.04 → 18, G=0.03 → 13, H=0.02 → 9, I=0.01 → 4, J=0.01 → 4 -->
+    <rect x="52"  y="146" width="22" height="154" fill="#3b82f6"/>
+    <rect x="78"  y="190" width="22" height="110" fill="#3b82f6"/>
+    <rect x="104" y="234" width="22" height="66"  fill="#3b82f6"/>
+    <rect x="130" y="265" width="22" height="35"  fill="#3b82f6"/>
+    <rect x="156" y="274" width="22" height="26"  fill="#3b82f6"/>
+    <rect x="182" y="282" width="22" height="18"  fill="#3b82f6"/>
+    <rect x="208" y="287" width="22" height="13"  fill="#3b82f6"/>
+    <rect x="234" y="291" width="22" height="9"   fill="#3b82f6"/>
+    <rect x="260" y="296" width="22" height="4"   fill="#3b82f6"/>
+    <rect x="286" y="296" width="22" height="4"   fill="#3b82f6"/>
+
+    <!-- x labels -->
+    <text x="63"  y="318" text-anchor="middle" font-size="10" fill="#374151">A</text>
+    <text x="89"  y="318" text-anchor="middle" font-size="10" fill="#374151">B</text>
+    <text x="115" y="318" text-anchor="middle" font-size="10" fill="#374151">C</text>
+    <text x="141" y="318" text-anchor="middle" font-size="10" fill="#374151">D</text>
+    <text x="167" y="318" text-anchor="middle" font-size="10" fill="#374151">E</text>
+    <text x="193" y="318" text-anchor="middle" font-size="10" fill="#374151">F</text>
+    <text x="219" y="318" text-anchor="middle" font-size="10" fill="#374151">G</text>
+    <text x="245" y="318" text-anchor="middle" font-size="10" fill="#374151">H</text>
+    <text x="271" y="318" text-anchor="middle" font-size="10" fill="#374151">I</text>
+    <text x="297" y="318" text-anchor="middle" font-size="10" fill="#374151">J</text>
+
+    <text x="170" y="335" text-anchor="middle" font-size="10" fill="#374151">tokens (sorted by prob)</text>
+  </g>
+
+  <!-- ===== Panel 2: Top-k ===== -->
+  <g transform="translate(390, 90)">
+    <text x="170" y="0" text-anchor="middle" font-size="15" font-weight="700" fill="#16a34a">Top-k sampling  (k = 3)</text>
+    <text x="170" y="18" text-anchor="middle" font-size="11" fill="#374151">keep top 3 by prob, renormalize</text>
+
+    <line x1="40" y1="300" x2="320" y2="300" stroke="#111827" stroke-width="1.2"/>
+    <line x1="40" y1="70" x2="40" y2="300" stroke="#111827" stroke-width="1.2"/>
+    <line x1="37" y1="300" x2="40" y2="300" stroke="#111827"/>
+    <text x="32" y="304" text-anchor="end" font-size="10" fill="#374151">0</text>
+    <line x1="37" y1="190" x2="40" y2="190" stroke="#111827"/>
+    <text x="32" y="194" text-anchor="end" font-size="10" fill="#374151">0.25</text>
+    <line x1="37" y1="80" x2="40" y2="80" stroke="#111827"/>
+    <text x="32" y="84" text-anchor="end" font-size="10" fill="#374151">0.5</text>
+
+    <!-- renormalized: A=0.467, B=0.333, C=0.200 → heights 205, 147, 88 -->
+    <rect x="52"  y="95"  width="22" height="205" fill="#16a34a"/>
+    <rect x="78"  y="153" width="22" height="147" fill="#16a34a"/>
+    <rect x="104" y="212" width="22" height="88"  fill="#16a34a"/>
+    <!-- remaining bars shown as greyed-out (zero) -->
+    <line x1="130" y1="300" x2="308" y2="300" stroke="#dc2626" stroke-width="2"/>
+    <text x="219" y="283" text-anchor="middle" font-size="11" font-weight="600" fill="#dc2626">probability = 0 (dropped)</text>
+
+    <text x="63"  y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#111827">A</text>
+    <text x="89"  y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#111827">B</text>
+    <text x="115" y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#111827">C</text>
+    <text x="141" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">D</text>
+    <text x="167" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">E</text>
+    <text x="193" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">F</text>
+    <text x="219" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">G</text>
+    <text x="245" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">H</text>
+    <text x="271" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">I</text>
+    <text x="297" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">J</text>
+
+    <text x="170" y="335" text-anchor="middle" font-size="10" fill="#374151">fixed k, regardless of shape</text>
+  </g>
+
+  <!-- ===== Panel 3: Top-p ===== -->
+  <g transform="translate(750, 90)">
+    <text x="170" y="0" text-anchor="middle" font-size="15" font-weight="700" fill="#7c3aed">Top-p sampling  (p = 0.9)</text>
+    <text x="170" y="18" text-anchor="middle" font-size="11" fill="#374151">smallest set with Σp ≥ 0.9, renormalize</text>
+
+    <line x1="40" y1="300" x2="320" y2="300" stroke="#111827" stroke-width="1.2"/>
+    <line x1="40" y1="70" x2="40" y2="300" stroke="#111827" stroke-width="1.2"/>
+    <line x1="37" y1="300" x2="40" y2="300" stroke="#111827"/>
+    <text x="32" y="304" text-anchor="end" font-size="10" fill="#374151">0</text>
+    <line x1="37" y1="190" x2="40" y2="190" stroke="#111827"/>
+    <text x="32" y="194" text-anchor="end" font-size="10" fill="#374151">0.25</text>
+    <line x1="37" y1="80" x2="40" y2="80" stroke="#111827"/>
+    <text x="32" y="84" text-anchor="end" font-size="10" fill="#374151">0.5</text>
+
+    <!-- keep A..F (cumulative = 0.93), renormalize by /0.93 -->
+    <!-- A=0.376→165, B=0.269→118, C=0.161→71, D=0.086→38, E=0.065→29, F=0.043→19 -->
+    <rect x="52"  y="135" width="22" height="165" fill="#7c3aed"/>
+    <rect x="78"  y="182" width="22" height="118" fill="#7c3aed"/>
+    <rect x="104" y="229" width="22" height="71"  fill="#7c3aed"/>
+    <rect x="130" y="262" width="22" height="38"  fill="#7c3aed"/>
+    <rect x="156" y="271" width="22" height="29"  fill="#7c3aed"/>
+    <rect x="182" y="281" width="22" height="19"  fill="#7c3aed"/>
+
+    <line x1="208" y1="300" x2="308" y2="300" stroke="#dc2626" stroke-width="2"/>
+    <text x="258" y="283" text-anchor="middle" font-size="11" font-weight="600" fill="#dc2626">dropped</text>
+
+    <text x="63"  y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#111827">A</text>
+    <text x="89"  y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#111827">B</text>
+    <text x="115" y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#111827">C</text>
+    <text x="141" y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#111827">D</text>
+    <text x="167" y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#111827">E</text>
+    <text x="193" y="318" text-anchor="middle" font-size="10" font-weight="700" fill="#111827">F</text>
+    <text x="219" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">G</text>
+    <text x="245" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">H</text>
+    <text x="271" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">I</text>
+    <text x="297" y="318" text-anchor="middle" font-size="10" fill="#9ca3af">J</text>
+
+    <text x="170" y="335" text-anchor="middle" font-size="10" fill="#374151">adaptive — depends on shape</text>
+  </g>
+
+  <!-- Bottom callout -->
+  <text x="550" y="450" text-anchor="middle" font-size="12" font-style="italic" fill="#374151">Top-p adapts to the model's confidence: few tokens when peaked, many when flat. This is why it's the default in modern inference servers.</text>
+</svg>

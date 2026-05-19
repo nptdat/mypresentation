@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 460" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#374151"/>
+    </marker>
+    <marker id="arr4r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+  </defs>
+
+  <text x="550" y="32" text-anchor="middle" font-size="20" font-weight="700" fill="#111827">Self-Refinement: Generate → Critique → Revise</text>
+  <text x="550" y="55" text-anchor="middle" font-size="13" fill="#374151">The same model produces a draft, criticizes it, and revises — iterate until satisfied or budget hit</text>
+
+  <!-- Prompt -->
+  <rect x="40" y="180" width="170" height="100" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="125" y="215" text-anchor="middle" font-size="14" font-weight="700" fill="#92400e">Prompt x</text>
+  <text x="125" y="240" text-anchor="middle" font-size="11" fill="#92400e">Task / question</text>
+  <text x="125" y="258" text-anchor="middle" font-size="11" fill="#92400e">to solve</text>
+
+  <!-- Generate -->
+  <rect x="270" y="100" width="180" height="100" rx="10" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="360" y="135" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">1. Generate</text>
+  <text x="360" y="160" text-anchor="middle" font-size="11" fill="#1e3a8a">model produces</text>
+  <text x="360" y="178" text-anchor="middle" font-size="11" fill="#1e3a8a">draft answer Y1</text>
+
+  <!-- Critique -->
+  <rect x="270" y="260" width="180" height="100" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+  <text x="360" y="295" text-anchor="middle" font-size="14" font-weight="700" fill="#7f1d1d">2. Critique</text>
+  <text x="360" y="320" text-anchor="middle" font-size="11" fill="#7f1d1d">"Find errors,</text>
+  <text x="360" y="338" text-anchor="middle" font-size="11" fill="#7f1d1d">missing steps..."</text>
+
+  <!-- Revise -->
+  <rect x="510" y="180" width="180" height="100" rx="10" fill="#f3e8ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="600" y="215" text-anchor="middle" font-size="14" font-weight="700" fill="#5b21b6">3. Revise</text>
+  <text x="600" y="240" text-anchor="middle" font-size="11" fill="#5b21b6">incorporate critique, fix, </text>
+  <text x="600" y="258" text-anchor="middle" font-size="11" fill="#5b21b6">produce Y2</text>
+
+  <!-- Revise -->
+  <rect x="730" y="180" width="160" height="100" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="810" y="215" text-anchor="middle" font-size="14" font-weight="700" fill="#92400e">4. Select</text>
+  <text x="810" y="240" text-anchor="middle" font-size="11" fill="#92400e">Choose the best one</text>
+  <text x="810" y="258" text-anchor="middle" font-size="11" fill="#92400e">Choose Y1 or Y2</text>
+
+  <!-- Final -->
+  <rect x="920" y="180" width="160" height="100" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="1000" y="220" text-anchor="middle" font-size="14" font-weight="700" fill="#14532d">Final answer</text>
+  <text x="1000" y="250" text-anchor="middle" font-size="11" fill="#14532d">return Y</text>
+
+  <!-- Arrows -->
+  <path d="M 210 220 L 270 150" stroke="#374151" stroke-width="2" fill="none" marker-end="url(#arr4)"/>
+  <path d="M 360 200 L 360 260" stroke="#374151" stroke-width="2" fill="none" marker-end="url(#arr4)"/>
+  <text x="375" y="235" font-size="12" font-style="italic" fill="#374151">draft</text>
+  <path d="M 450 310 L 510 260" stroke="#374151" stroke-width="2" fill="none" marker-end="url(#arr4)"/>
+  <text x="475" y="305" font-size="12" font-style="italic" fill="#374151">feedback</text>
+  <path d="M 690 230 L 730 230" stroke="#374151" stroke-width="2" fill="none" marker-end="url(#arr4)"/>
+  <text x="730" y="350" font-size="12" font-weight="700" fill="#5b21b6">Repeat up to R times or until no critic</text>
+  <path d="M 890 230 L 920 230" stroke="#374151" stroke-width="2" fill="none" marker-end="url(#arr4)"/>
+
+  <!-- Loop indicator -->
+  <path d="M 800 280 C 750 350, 750 350, 450 350" fill="none" stroke="#374151" stroke-width="2" marker-end="url(#arr4)"/>
+
+  <text x="550" y="425" text-anchor="middle" font-size="12" font-style="italic" fill="#374151">Cost grows linearly with refinement rounds — but each round can fix specific kinds of errors</text>
+</svg>
